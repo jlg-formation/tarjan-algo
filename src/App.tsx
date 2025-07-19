@@ -6,6 +6,8 @@ import { useGraphStore } from "./store/graphStore";
 export default function App() {
   const setEditMode = useGraphStore((s) => s.setEditMode);
   const resetGraphState = useGraphStore((s) => s.resetGraphState);
+  const nodeAlgoState = useGraphStore((s) => s.nodeAlgoState);
+  const algoStack = useGraphStore((s) => s.algoStack);
 
   const handleResetGraph = () => {
     if (confirm("Voulez-vous vraiment effacer le graphe ?")) {
@@ -78,13 +80,25 @@ export default function App() {
             <h3 className="text-md font-semibold">État de l’algo</h3>
             <p className="text-sm text-gray-600 mt-2">Index / Lowlink :</p>
             <ul className="text-sm list-disc list-inside">
-              <li>N1 : index = 0, lowlink = 0</li>
-              <li>N2 : index = 1, lowlink = 0</li>
+              {Object.entries(nodeAlgoState).map(([id, { index, lowlink }]) => (
+                <li key={id}>
+                  {id} : index = {index ?? "—"}, lowlink = {lowlink ?? "—"}
+                </li>
+              ))}
             </ul>
             <p className="text-sm text-gray-600 mt-4">Pile :</p>
             <div className="bg-gray-200 p-2 rounded">
-              <div className="bg-blue-200 p-1 my-1 rounded text-center">N2</div>
-              <div className="bg-blue-200 p-1 my-1 rounded text-center">N1</div>
+              {algoStack
+                .slice()
+                .reverse()
+                .map((id) => (
+                  <div
+                    key={id}
+                    className="bg-blue-200 p-1 my-1 rounded text-center"
+                  >
+                    {id}
+                  </div>
+                ))}
             </div>
           </div>
         </aside>

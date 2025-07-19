@@ -2,6 +2,11 @@ import { create } from "zustand";
 
 type EditMode = "none" | "addNode" | "addEdgeStep1" | "addEdgeStep2";
 
+interface NodeAlgoState {
+  index: number | null;
+  lowlink: number | null;
+}
+
 interface GraphStore {
   editMode: EditMode;
   nodeCount: number;
@@ -11,6 +16,14 @@ interface GraphStore {
   getNextNodeId: () => string;
   resetGraphState: () => void;
   setSelectedNodeForEdge: (id: string | null) => void; // <-- ajouté
+
+  nodeAlgoState: Record<string, NodeAlgoState>;
+  algoStack: string[];
+
+  setNodeAlgoState: (id: string, state: NodeAlgoState) => void;
+  pushToStack: (id: string) => void;
+  popFromStack: () => void;
+  resetAlgoState: () => void;
 }
 
 export const useGraphStore = create<GraphStore>((set, get) => ({
@@ -32,4 +45,28 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
   },
 
   setSelectedNodeForEdge: (id) => set({ selectedNodeForEdge: id }),
+
+  nodeAlgoState: {},
+  algoStack: [],
+
+  setNodeAlgoState: (id, state) =>
+    set((s) => ({
+      nodeAlgoState: { ...s.nodeAlgoState, [id]: state },
+    })),
+
+  pushToStack: (id) =>
+    set((s) => ({
+      algoStack: [...s.algoStack, id],
+    })),
+
+  popFromStack: () =>
+    set((s) => ({
+      algoStack: s.algoStack.slice(0, -1),
+    })),
+
+  resetAlgoState: () =>
+    set({
+      nodeAlgoState: {},
+      algoStack: [],
+    }),
 }));
