@@ -1,53 +1,73 @@
 import { create } from "zustand";
 
-type EditMode = "none" | "addNode" | "addEdgeStep1" | "addEdgeStep2";
+export type EditMode = "none" | "addNode" | "addEdgeStep1" | "addEdgeStep2";
 
 interface NodeAlgoState {
   index: number | null;
   lowlink: number | null;
 }
 
+interface TarjanAlgoState {
+  index: number;
+  currentNode: string | null;
+  stack: string[];
+  indexMap: Record<string, number>;
+  lowlinkMap: Record<string, number>;
+  onStack: Set<string>;
+  sccList: string[][];
+  callStack: string[];
+}
+
 interface GraphStore {
-  editMode: EditMode;
   nodeCount: number;
-  selectedNodeForEdge: string | null; // <-- ajouté
-
-  setEditMode: (mode: EditMode) => void;
-  getNextNodeId: () => string;
-  resetGraphState: () => void;
-  setSelectedNodeForEdge: (id: string | null) => void; // <-- ajouté
-
+  editMode: EditMode;
+  selectedNodeForEdge: string | null;
   nodeAlgoState: Record<string, NodeAlgoState>;
   algoStack: string[];
+  algoStep: number;
+  algoState: TarjanAlgoState | null;
+
+  setEditMode: (mode: EditMode) => void;
+  incrementNodeCount: () => number;
+  resetGraphState: () => void;
 
   setNodeAlgoState: (id: string, state: NodeAlgoState) => void;
   pushToStack: (id: string) => void;
   popFromStack: () => void;
   resetAlgoState: () => void;
+
+  startAlgorithm: (graph: Record<string, string[]>) => void;
+  nextStep: () => void;
 }
 
 export const useGraphStore = create<GraphStore>((set, get) => ({
-  editMode: "none",
   nodeCount: 0,
+  editMode: "none",
   selectedNodeForEdge: null,
+  nodeAlgoState: {},
+  algoStack: [],
+  algoStep: 0,
+  algoState: null,
 
   setEditMode: (mode) => set({ editMode: mode }),
 
-  getNextNodeId: () => {
-    const count = get().nodeCount;
-    const newId = `N${count + 1}`;
-    set({ nodeCount: count + 1 });
-    return newId;
+  incrementNodeCount: () => {
+    const count = get().nodeCount + 1;
+    set({ nodeCount: count });
+    return count;
   },
 
   resetGraphState: () => {
-    set({ nodeCount: 0, editMode: "none", selectedNodeForEdge: null });
+    set({
+      nodeCount: 0,
+      editMode: "none",
+      selectedNodeForEdge: null,
+      nodeAlgoState: {},
+      algoStack: [],
+      algoStep: 0,
+      algoState: null,
+    });
   },
-
-  setSelectedNodeForEdge: (id) => set({ selectedNodeForEdge: id }),
-
-  nodeAlgoState: {},
-  algoStack: [],
 
   setNodeAlgoState: (id, state) =>
     set((s) => ({
@@ -68,5 +88,34 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
     set({
       nodeAlgoState: {},
       algoStack: [],
+      algoStep: 0,
+      algoState: null,
     }),
+
+  startAlgorithm: (graph) => {
+    const nodeIds = Object.keys(graph);
+    if (nodeIds.length === 0) return;
+
+    const initialNode = nodeIds[0];
+
+    set({
+      algoState: {
+        index: 0,
+        currentNode: initialNode,
+        stack: [],
+        indexMap: {},
+        lowlinkMap: {},
+        onStack: new Set(),
+        sccList: [],
+        callStack: [initialNode],
+      },
+      algoStep: 0,
+    });
+  },
+
+  nextStep: () => {
+    const state = get().algoState;
+    if (!state) return;
+    // Étapes à implémenter dans le futur
+  },
 }));
