@@ -5,6 +5,14 @@ import { useGraphStore } from "./store/graphStore";
 
 export default function App() {
   const setEditMode = useGraphStore((s) => s.setEditMode);
+  const resetGraphState = useGraphStore((s) => s.resetGraphState);
+
+  const handleResetGraph = () => {
+    if (confirm("Voulez-vous vraiment effacer le graphe ?")) {
+      resetGraphState();
+      window.dispatchEvent(new Event("reset-graph"));
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 text-gray-800">
@@ -30,7 +38,10 @@ export default function App() {
           >
             Ajouter une arête
           </button>
-          <button className="w-full bg-red-600 text-white px-4 py-2 rounded">
+          <button
+            className="w-full bg-red-600 text-white px-4 py-2 rounded"
+            onClick={handleResetGraph}
+          >
             Effacer graphe
           </button>
           <p className="text-sm text-gray-600 mt-6">
