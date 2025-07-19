@@ -1,18 +1,27 @@
-import { createRoot } from "react-dom/client";
 import "./index.css";
 import GraphCanvas from "./components/GraphCanvas";
 import { useGraphStore } from "./store/graphStore";
 
 export default function App() {
+  console.log("render app");
   const setEditMode = useGraphStore((s) => s.setEditMode);
   const resetGraphState = useGraphStore((s) => s.resetGraphState);
-  const nodeAlgoState = useGraphStore((s) => s.nodeAlgoState);
-  const algoStack = useGraphStore((s) => s.algoStack);
+  const startAutoRun = useGraphStore((s) => s.startAutoRun);
+  const stopAutoRun = useGraphStore((s) => s.stopAutoRun);
+  const autoRun = useGraphStore((s) => s.algoState?.autoRun ?? false);
 
   const handleResetGraph = () => {
     if (confirm("Voulez-vous vraiment effacer le graphe ?")) {
       resetGraphState();
       window.dispatchEvent(new Event("reset-graph"));
+    }
+  };
+
+  const handleAutoRunToggle = () => {
+    if (autoRun) {
+      stopAutoRun();
+    } else {
+      startAutoRun();
     }
   };
 
@@ -69,8 +78,12 @@ export default function App() {
           <button className="w-full bg-blue-500 text-white px-4 py-2 rounded">
             Étape précédente
           </button>
-          <button className="w-full bg-gray-500 text-white px-4 py-2 rounded">
-            Lecture automatique
+          <button
+            className="w-full px-4 py-2 rounded text-white "
+            style={{ backgroundColor: autoRun ? "#DC2626" : "#6B7280" }}
+            onClick={handleAutoRunToggle}
+          >
+            {autoRun ? "Stop lecture automatique" : "Lecture automatique"}
           </button>
           <button className="w-full bg-yellow-500 text-white px-4 py-2 rounded">
             Mode debug
@@ -80,25 +93,13 @@ export default function App() {
             <h3 className="text-md font-semibold">État de l’algo</h3>
             <p className="text-sm text-gray-600 mt-2">Index / Lowlink :</p>
             <ul className="text-sm list-disc list-inside">
-              {Object.entries(nodeAlgoState).map(([id, { index, lowlink }]) => (
-                <li key={id}>
-                  {id} : index = {index ?? "—"}, lowlink = {lowlink ?? "—"}
-                </li>
-              ))}
+              <li>N1 : index = 0, lowlink = 0</li>
+              <li>N2 : index = 1, lowlink = 0</li>
             </ul>
             <p className="text-sm text-gray-600 mt-4">Pile :</p>
             <div className="bg-gray-200 p-2 rounded">
-              {algoStack
-                .slice()
-                .reverse()
-                .map((id) => (
-                  <div
-                    key={id}
-                    className="bg-blue-200 p-1 my-1 rounded text-center"
-                  >
-                    {id}
-                  </div>
-                ))}
+              <div className="bg-blue-200 p-1 my-1 rounded text-center">N2</div>
+              <div className="bg-blue-200 p-1 my-1 rounded text-center">N1</div>
             </div>
           </div>
         </aside>
@@ -111,6 +112,3 @@ export default function App() {
     </div>
   );
 }
-
-const root = createRoot(document.getElementById("root")!);
-root.render(<App />);
