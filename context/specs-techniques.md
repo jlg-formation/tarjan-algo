@@ -3,20 +3,18 @@
 ## 🧱 Stack technique
 
 - **Bun** – Runtime JavaScript/TypeScript moderne, rapide
-- **Vite** – Dev server et bundler ultra rapide
+- **Vite** – Dev server et bundler rapide
 - **React (latest)** – Framework UI déclaratif
 - **TailwindCSS v4** – Styling utilitaire
-- **TypeScript** – Typage strict pour fiabilité
-- **Zustand** – Gestion d’état locale, simple et efficace
-- **Graph rendering** :
-  - Recommandé : [`react-flow`](https://reactflow.dev) ou `cytoscape.js` via wrapper React
-- **Animations** :
-  - `framer-motion` pour transitions
-- **Markdown + Docs** :
-  - Optionnel : `react-markdown` pour l’explication théorique
-- **Test** :
-  - Unitaires : `vitest`
-  - End-to-end (optionnel) : `playwright`
+- **TypeScript** – Typage strict
+- **Zustand** – Gestion d’état légère et réactive
+- **React Flow** – Rendu graphique du graphe orienté
+- **Framer Motion** – Transitions animées
+- **React Markdown** – Rendu d’explication théorique en markdown
+- **Vitest** – Tests unitaires
+- **Playwright** (optionnel) – Tests end-to-end
+
+---
 
 ## 🧩 Structure des composants React
 
@@ -24,58 +22,61 @@
 /src
 ├── App.tsx
 ├── components/
-│   ├── GraphCanvas.tsx            # Affiche et anime le graphe
-│   ├── GraphEditorToolbar.tsx     # Ajouter/supprimer/modifier sommet ou arête
-│   ├── ControlPanel.tsx           # Boutons (démarrer, step, debug, lecture auto)
-│   ├── AlgorithmConsole.tsx       # Affichage pile / index / lowlink / SCC
-│   ├── ExplanationBox.tsx         # Texte pédagogique par étape
-│   ├── DebugCallTree.tsx          # Arborescence récursive (DFS)
-│   └── TheorySlide.tsx            # Slide avec pseudocode et infos
+│   ├── GraphCanvas.tsx            # Affiche le graphe avec React Flow
+│   ├── GraphEditorToolbar.tsx     # Actions pour modifier le graphe (édition)
+│   ├── ControlPanel.tsx           # Boutons : démarrer, étape suivante/précédente, debug
+│   ├── AlgorithmConsole.tsx       # Pile, index, lowlink, SCC en temps réel
+│   ├── ExplanationBox.tsx         # Explication pédagogique étape par étape
+│   ├── DebugCallTree.tsx          # Affichage récursif (DFS) de l’appel de fonctions
+│   └── TheorySlide.tsx            # Rendu markdown (React Markdown)
 ├── store/
-│   ├── graphStore.ts              # Structure du graphe (nœuds, arêtes)
-│   ├── algoState.ts               # Pile, index, lowlink, étapes, SCC
-│   └── history.ts                 # Pour le bouton “Étape précédente”
+│   ├── graphStore.ts              # État du graphe et édition
+│   ├── algoState.ts               # État algorithmique (pile, index, SCC)
+│   └── history.ts                 # Historique pour bouton retour
 ├── utils/
-│   ├── tarjan.ts                  # Implémentation pas-à-pas de l’algo
-│   └── graphHelpers.ts            # Fonctions utiles (générer graphe, valider, etc.)
+│   ├── tarjan.ts                  # Implémentation pas-à-pas (générateur)
+│   └── graphHelpers.ts            # Génération, validation, nettoyage du graphe
 ```
 
-## 🧠 Gestion d’état (Zustand)
+---
+
+## ⚙️ Gestion d’état (Zustand)
 
 ### `graphStore.ts`
-- `nodes: GraphNode[]`  
-- `edges: GraphEdge[]`  
-- `editable: boolean`  
-- `resetGraph()`, `addNode()`, `addEdge()`, etc.
+- `nodes: GraphNode[]`
+- `edges: GraphEdge[]`
+- `editable: boolean`
+- Fonctions : `addNode`, `addEdge`, `removeNode`, `setEditable`, `resetGraph`
 
 ### `algoState.ts`
 - `indexMap: Map<NodeId, number>`
 - `lowLinkMap: Map<NodeId, number>`
 - `onStackMap: Map<NodeId, boolean>`
 - `stack: NodeId[]`
+- `sccs: NodeId[][]`
 - `currentIndex: number`
 - `currentStep: number`
-- `sccs: NodeId[][]`
 - `status: "idle" | "running" | "done"`
-- `startAlgo()`, `stepForward()`, `stepBack()`, `resetAlgo()`
+- Fonctions : `startAlgo`, `stepForward`, `stepBack`, `resetAlgo`
 
-### `history.ts`
-- Liste des états successifs pour permettre `undo`
-- Implémentation d’un système d’instantané (deep clone)
+---
 
-## 🔁 Fonctionnement de l’algorithme étape par étape
+## 🔁 Algo Tarjan pas-à-pas
 
-### Dans `/utils/tarjan.ts`
-- Implémentation par générateur ou state machine :
+Utilisation d’un générateur pour décomposer l’algorithme :
+
 ```ts
 function* tarjanStepByStep(graph: Graph): Generator<TarjanStateUpdate>
 ```
-Chaque appel de `next()` donne :
-- état courant
-- action effectuée
-- mise à jour des données (pile, index, lowlink…)
 
-## 📁 Données Typescript
+Chaque `next()` donne :
+- état du graphe
+- action (visit, push, set-lowlink, pop-scc…)
+- mise à jour : index, lowlink, pile, SCC
+
+---
+
+## 📐 Types TypeScript
 
 ```ts
 type NodeId = string;
@@ -103,10 +104,30 @@ interface TarjanStateUpdate {
 }
 ```
 
-## 📈 Performance et sécurité
+---
 
-- App légère : tout client-side, aucun backend
-- Fichier `.env` inutile
-- Graphe limité à ~30 nœuds pour garder lisibilité
-- Pas de dépendances critiques externes
-- Aucun accès réseau requis
+## 🎨 UI / UX
+
+- React Flow permet :
+  - Drag & drop de nœuds
+  - Ajout d’arêtes
+  - Rendu clair du graphe dirigé
+- Utilisateur peut :
+  - Modifier graphe (mode édition)
+  - Lancer l’algo (mode lecture)
+  - Explorer avec pas-à-pas ou lecture automatique
+  - Activer un panneau Markdown (React Markdown) pour la théorie
+  - Activer un mode Debug récursif
+
+---
+
+## 📈 Sécurité et performances
+
+- Application totalement client-side
+- Aucun appel réseau, pas de backend
+- Pas de stockage persistant
+- Graphe limité en taille (~30 nœuds)
+- Animations non bloquantes
+- Aucune dépendance critique instable
+
+---
