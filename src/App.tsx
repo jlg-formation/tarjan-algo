@@ -24,7 +24,10 @@ export default function App() {
           >
             Ajouter un nœud
           </button>
-          <button className="w-full bg-blue-600 text-white px-4 py-2 rounded">
+          <button
+            className="w-full bg-blue-600 text-white px-4 py-2 rounded"
+            onClick={() => setEditMode("addEdgeStep1")}
+          >
             Ajouter une arête
           </button>
           <button className="w-full bg-red-600 text-white px-4 py-2 rounded">

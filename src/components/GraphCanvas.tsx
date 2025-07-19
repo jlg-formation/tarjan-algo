@@ -2,13 +2,14 @@ import React, { useCallback } from "react";
 import ReactFlow, {
   addEdge,
   Background,
-  type Connection,
   Controls,
-  type Edge,
   MiniMap,
-  type Node,
   useEdgesState,
   useNodesState,
+  type Connection,
+  type Edge,
+  type Node,
+  type NodeMouseHandler,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { useGraphStore } from "../store/graphStore";
@@ -19,6 +20,8 @@ export default function GraphCanvas() {
   const editMode = useGraphStore((s) => s.editMode);
   const getNextNodeId = useGraphStore((s) => s.getNextNodeId);
   const setEditMode = useGraphStore((s) => s.setEditMode);
+  const selectedNodeForEdge = useGraphStore((s) => s.selectedNodeForEdge);
+  const setSelectedNodeForEdge = useGraphStore((s) => s.setSelectedNodeForEdge);
 
   const onConnect = useCallback(
     (connection: Connection) => setEdges((eds) => addEdge(connection, eds)),
@@ -45,6 +48,33 @@ export default function GraphCanvas() {
     [editMode, getNextNodeId, setNodes, setEditMode, nodes.length]
   );
 
+  const handleNodeClick: NodeMouseHandler = useCallback(
+    (_, node) => {
+      if (editMode === "addEdgeStep1") {
+        setSelectedNodeForEdge(node.id);
+        setEditMode("addEdgeStep2");
+      } else if (editMode === "addEdgeStep2" && selectedNodeForEdge) {
+        if (selectedNodeForEdge !== node.id) {
+          const newEdge: Edge = {
+            id: `e-${selectedNodeForEdge}-${node.id}`,
+            source: selectedNodeForEdge,
+            target: node.id,
+          };
+          setEdges((eds) => [...eds, newEdge]);
+        }
+        setSelectedNodeForEdge(null);
+        setEditMode("none");
+      }
+    },
+    [
+      editMode,
+      selectedNodeForEdge,
+      setEdges,
+      setEditMode,
+      setSelectedNodeForEdge,
+    ]
+  );
+
   return (
     <div
       className="w-full h-full bg-white rounded shadow"
@@ -56,6 +86,7 @@ export default function GraphCanvas() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        onNodeClick={handleNodeClick}
         fitView
       >
         <Background gap={12} />
