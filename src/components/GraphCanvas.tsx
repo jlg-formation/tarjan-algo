@@ -1,48 +1,55 @@
-// src/components/GraphCanvas.tsx
+import React, { useCallback } from "react";
 import ReactFlow, {
   addEdge,
   Background,
+  type Connection,
   Controls,
+  type Edge,
   MiniMap,
+  type Node,
   useEdgesState,
   useNodesState,
-  type Connection,
-  type Edge,
-  type Node,
 } from "reactflow";
 import "reactflow/dist/style.css";
-
-const initialNodes: Node[] = [
-  {
-    id: "1",
-    data: { label: "N1" },
-    position: { x: 100, y: 100 },
-  },
-  {
-    id: "2",
-    data: { label: "N2" },
-    position: { x: 300, y: 100 },
-  },
-];
-
-const initialEdges: Edge[] = [
-  {
-    id: "e1-2",
-    source: "1",
-    target: "2",
-    type: "default",
-  },
-];
+import { useGraphStore } from "../store/graphStore";
 
 export default function GraphCanvas() {
-  const [nodes, , onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node[]>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge[]>([]);
+  const editMode = useGraphStore((s) => s.editMode);
+  const getNextNodeId = useGraphStore((s) => s.getNextNodeId);
+  const setEditMode = useGraphStore((s) => s.setEditMode);
 
-  const onConnect = (connection: Connection) =>
-    setEdges((eds) => addEdge(connection, eds));
+  const onConnect = useCallback(
+    (connection: Connection) => setEdges((eds) => addEdge(connection, eds)),
+    [setEdges]
+  );
+
+  const handleCanvasClick = useCallback(
+    (event: React.MouseEvent) => {
+      if (editMode !== "addNode") return;
+
+      const bounds = (event.target as HTMLElement).getBoundingClientRect();
+      const x = event.clientX - bounds.left;
+      const y = event.clientY - bounds.top;
+
+      const newNode: Node = {
+        id: getNextNodeId(),
+        data: { label: `N${nodes.length + 1}` },
+        position: { x, y },
+      };
+
+      setNodes((nds) => nds.concat(newNode));
+      setEditMode("none");
+    },
+    [editMode, getNextNodeId, setNodes, setEditMode, nodes.length]
+  );
 
   return (
-    <div className="w-full h-full bg-white rounded shadow">
+    <div
+      className="w-full h-full bg-white rounded shadow"
+      onClick={handleCanvasClick}
+    >
       <ReactFlow
         nodes={nodes}
         edges={edges}
