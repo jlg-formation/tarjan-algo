@@ -1,5 +1,6 @@
 import { createRoot } from "react-dom/client";
 import "./index.css";
+import GraphCanvas from "./components/GraphCanvas";
 
 export default function App() {
   return (
@@ -31,9 +32,7 @@ export default function App() {
 
         {/* Center Panel - Graph */}
         <section className="flex-grow p-4 bg-gray-100">
-          <div className="w-full h-full border-2 border-dashed border-gray-400 flex items-center justify-center text-gray-400">
-            [Canvas du graphe interactif ici]
-          </div>
+          <GraphCanvas />
         </section>
 
         {/* Right Panel - Algorithm Control */}
