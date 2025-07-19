@@ -1,8 +1,11 @@
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import GraphCanvas from "./components/GraphCanvas";
+import { useGraphStore } from "./store/graphStore";
 
 export default function App() {
+  const setEditMode = useGraphStore((s) => s.setEditMode);
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 text-gray-800">
       {/* Header */}
@@ -15,7 +18,10 @@ export default function App() {
         {/* Left Panel - Edition */}
         <aside className="w-[20em] border-r border-gray-300 p-4 space-y-4 bg-white">
           <h2 className="font-semibold text-lg">Édition du graphe</h2>
-          <button className="w-full bg-blue-600 text-white px-4 py-2 rounded">
+          <button
+            className="w-full bg-blue-600 text-white px-4 py-2 rounded"
+            onClick={() => setEditMode("addNode")}
+          >
             Ajouter un nœud
           </button>
           <button className="w-full bg-blue-600 text-white px-4 py-2 rounded">
