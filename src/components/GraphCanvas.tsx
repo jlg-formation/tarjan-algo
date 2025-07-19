@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import ReactFlow, {
   addEdge,
   Background,
@@ -22,6 +22,16 @@ export default function GraphCanvas() {
   const setEditMode = useGraphStore((s) => s.setEditMode);
   const selectedNodeForEdge = useGraphStore((s) => s.selectedNodeForEdge);
   const setSelectedNodeForEdge = useGraphStore((s) => s.setSelectedNodeForEdge);
+
+  // Écouter le reset depuis App
+  useEffect(() => {
+    const handleReset = () => {
+      setNodes([]);
+      setEdges([]);
+    };
+    window.addEventListener("reset-graph", handleReset);
+    return () => window.removeEventListener("reset-graph", handleReset);
+  }, [setNodes, setEdges]);
 
   const onConnect = useCallback(
     (connection: Connection) => setEdges((eds) => addEdge(connection, eds)),
