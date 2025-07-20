@@ -101,7 +101,18 @@ export default function GraphCanvas() {
         label: n.data.label,
         position: n.position,
       }));
-      setGraphNodes(updatedGraph);
+      const equal =
+        updatedGraph.length === nodes.length &&
+        updatedGraph.every(
+          (n, i) =>
+            n.id === nodes[i].id &&
+            n.label === nodes[i].label &&
+            n.position.x === nodes[i].position.x &&
+            n.position.y === nodes[i].position.y,
+        );
+      if (!equal) {
+        setGraphNodes(updatedGraph);
+      }
     },
     [nodes, setGraphNodes],
   );
@@ -119,7 +130,17 @@ export default function GraphCanvas() {
         from: e.source,
         to: e.target,
       }));
-      setGraphEdges(updatedGraph);
+      const equal =
+        updatedGraph.length === edges.length &&
+        updatedGraph.every(
+          (e, i) =>
+            e.id === edges[i].id &&
+            e.from === edges[i].from &&
+            e.to === edges[i].to,
+        );
+      if (!equal) {
+        setGraphEdges(updatedGraph);
+      }
     },
     [edges, setGraphEdges],
   );
