@@ -15,7 +15,7 @@ import ReactFlow, {
 import "reactflow/dist/style.css";
 import { useGraphStore } from "../store/graphStore";
 import { useAlgoStore } from "../store/algoState";
-import { shallow } from "zustand/shallow";
+import { useShallow } from "zustand/react/shallow";
 
 const sccColors = [
   "#fca5a5",
@@ -41,12 +41,11 @@ export default function GraphCanvas() {
   const editable = useGraphStore((s) => s.editable);
 
   const algo = useAlgoStore(
-    (s) => ({
+    useShallow((s) => ({
       indexMap: s.indexMap,
       onStackMap: s.onStackMap,
       sccs: s.sccs,
-    }),
-    shallow,
+    })),
   );
 
   const getNodeColor = useCallback(
