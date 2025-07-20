@@ -5,15 +5,14 @@ import { useGraphStore } from "./store/graphStore";
 export default function App() {
   console.log("render app");
   const setEditMode = useGraphStore((s) => s.setEditMode);
-  const resetGraphState = useGraphStore((s) => s.resetGraphState);
+  const resetGraph = useGraphStore((s) => s.resetGraph);
   const startAutoRun = useGraphStore((s) => s.startAutoRun);
   const stopAutoRun = useGraphStore((s) => s.stopAutoRun);
   const autoRun = useGraphStore((s) => s.algoState?.autoRun ?? false);
 
   const handleResetGraph = () => {
     if (confirm("Voulez-vous vraiment effacer le graphe ?")) {
-      resetGraphState();
-      window.dispatchEvent(new Event("reset-graph"));
+      resetGraph();
     }
   };
 
