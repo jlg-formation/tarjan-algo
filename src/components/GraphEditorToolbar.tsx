@@ -1,0 +1,55 @@
+import React from "react";
+import { useGraphStore } from "../store/graphStore";
+
+export default function GraphEditorToolbar() {
+  const editMode = useGraphStore((s) => s.editMode);
+  const setEditMode = useGraphStore((s) => s.setEditMode);
+  const resetGraph = useGraphStore((s) => s.resetGraph);
+  const editable = useGraphStore((s) => s.editable);
+
+  const handleResetGraph = () => {
+    if (confirm("Voulez-vous vraiment effacer le graphe ?")) {
+      resetGraph();
+    }
+  };
+
+  const instruction = (() => {
+    switch (editMode) {
+      case "addNode":
+        return "Cliquez dans le graphe pour placer le n\u0153ud";
+      case "addEdgeStep1":
+        return "Cliquez sur le n\u0153ud source";
+      case "addEdgeStep2":
+        return "Cliquez sur le n\u0153ud cible";
+      default:
+        return null;
+    }
+  })();
+
+  return (
+    <div className="space-y-4">
+      <button
+        className="w-full bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
+        onClick={() => setEditMode("addNode")}
+        disabled={!editable}
+      >
+        Ajouter un n\u0153ud
+      </button>
+      <button
+        className="w-full bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
+        onClick={() => setEditMode("addEdgeStep1")}
+        disabled={!editable}
+      >
+        Ajouter une ar\u00eate
+      </button>
+      <button
+        className="w-full bg-red-600 text-white px-4 py-2 rounded disabled:opacity-50"
+        onClick={handleResetGraph}
+        disabled={!editable}
+      >
+        Effacer graphe
+      </button>
+      {instruction && <p className="text-sm text-gray-600">{instruction}</p>}
+    </div>
+  );
+}

@@ -1,20 +1,13 @@
 import "./index.css";
 import GraphCanvas from "./components/GraphCanvas";
+import GraphEditorToolbar from "./components/GraphEditorToolbar";
 import { useGraphStore } from "./store/graphStore";
 
 export default function App() {
   console.log("render app");
-  const setEditMode = useGraphStore((s) => s.setEditMode);
-  const resetGraph = useGraphStore((s) => s.resetGraph);
   const startAutoRun = useGraphStore((s) => s.startAutoRun);
   const stopAutoRun = useGraphStore((s) => s.stopAutoRun);
   const autoRun = useGraphStore((s) => s.algoState?.autoRun ?? false);
-
-  const handleResetGraph = () => {
-    if (confirm("Voulez-vous vraiment effacer le graphe ?")) {
-      resetGraph();
-    }
-  };
 
   const handleAutoRunToggle = () => {
     if (autoRun) {
@@ -36,28 +29,7 @@ export default function App() {
         {/* Left Panel - Edition */}
         <aside className="w-[20em] border-r border-gray-300 p-4 space-y-4 bg-white">
           <h2 className="font-semibold text-lg">Édition du graphe</h2>
-          <button
-            className="w-full bg-blue-600 text-white px-4 py-2 rounded"
-            onClick={() => setEditMode("addNode")}
-          >
-            Ajouter un nœud
-          </button>
-          <button
-            className="w-full bg-blue-600 text-white px-4 py-2 rounded"
-            onClick={() => setEditMode("addEdgeStep1")}
-          >
-            Ajouter une arête
-          </button>
-          <button
-            className="w-full bg-red-600 text-white px-4 py-2 rounded"
-            onClick={handleResetGraph}
-          >
-            Effacer graphe
-          </button>
-          <p className="text-sm text-gray-600 mt-6">
-            Cliquez sur le canvas pour placer un nœud après avoir cliqué sur
-            "Ajouter un nœud".
-          </p>
+          <GraphEditorToolbar />
         </aside>
 
         {/* Center Panel - Graph */}
