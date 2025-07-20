@@ -2,6 +2,7 @@ import "./index.css";
 import GraphCanvas from "./components/GraphCanvas";
 import GraphEditorToolbar from "./components/GraphEditorToolbar";
 import ControlPanel from "./components/ControlPanel";
+import AlgorithmConsole from "./components/AlgorithmConsole";
 
 export default function App() {
   console.log("render app");
@@ -30,6 +31,7 @@ export default function App() {
         <aside className="w-[20em] border-l border-gray-300 p-4 space-y-4 bg-white">
           <h2 className="font-semibold text-lg">Contrôle de l’algorithme</h2>
           <ControlPanel />
+          <AlgorithmConsole />
         </aside>
       </main>
 
