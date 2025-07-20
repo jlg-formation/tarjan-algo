@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import ReactFlow, {
   applyEdgeChanges,
   applyNodeChanges,
@@ -15,6 +15,16 @@ import ReactFlow, {
 import "reactflow/dist/style.css";
 import { useGraphStore } from "../store/graphStore";
 import { useAlgoStore } from "../store/algoState";
+import { shallow } from "zustand/shallow";
+
+const sccColors = [
+  "#fca5a5",
+  "#6ee7b7",
+  "#93c5fd",
+  "#fcd34d",
+  "#e879f9",
+  "#a3e635",
+];
 
 export default function GraphCanvas() {
   const nodes = useGraphStore((s) => s.nodes);
@@ -30,52 +40,62 @@ export default function GraphCanvas() {
   const setSelectedNodeForEdge = useGraphStore((s) => s.setSelectedNodeForEdge);
   const editable = useGraphStore((s) => s.editable);
 
-  const algo = useAlgoStore((s) => ({
-    indexMap: s.indexMap,
-    onStackMap: s.onStackMap,
-    sccs: s.sccs,
-  }));
+  const algo = useAlgoStore(
+    (s) => ({
+      indexMap: s.indexMap,
+      onStackMap: s.onStackMap,
+      sccs: s.sccs,
+    }),
+    shallow,
+  );
 
-  const sccColors = [
-    "#fca5a5",
-    "#6ee7b7",
-    "#93c5fd",
-    "#fcd34d",
-    "#e879f9",
-    "#a3e635",
-  ];
+  const getNodeColor = useCallback(
+    (id: string) => {
+      const sccIndex = algo.sccs.findIndex((s) => s.includes(id));
+      if (sccIndex !== -1) {
+        return sccColors[sccIndex % sccColors.length];
+      }
+      if (algo.onStackMap.get(id)) {
+        return "#bfdbfe"; // blue
+      }
+      if (algo.indexMap.has(id)) {
+        return "#fde68a"; // yellow
+      }
+      return "#d1d5db"; // gray
+    },
+    [algo],
+  );
 
-  const getNodeColor = (id: string) => {
-    const sccIndex = algo.sccs.findIndex((s) => s.includes(id));
-    if (sccIndex !== -1) {
-      return sccColors[sccIndex % sccColors.length];
-    }
-    if (algo.onStackMap.get(id)) {
-      return "#bfdbfe"; // blue
-    }
-    if (algo.indexMap.has(id)) {
-      return "#fde68a"; // yellow
-    }
-    return "#d1d5db"; // gray
-  };
+  const rfNodes: RFNode<{ label: string }>[] = useMemo(
+    () =>
+      nodes.map((n) => ({
+        id: n.id,
+        position: n.position,
+        data: { label: n.label },
+        draggable: editable,
+        style: { backgroundColor: getNodeColor(n.id) },
+      })),
+    [nodes, editable, getNodeColor],
+  );
 
-  const rfNodes: RFNode<{ label: string }>[] = nodes.map((n) => ({
-    id: n.id,
-    position: n.position,
-    data: { label: n.label },
-    draggable: editable,
-    style: { backgroundColor: getNodeColor(n.id) },
-  }));
-
-  const rfEdges: Edge[] = edges.map((e) => ({
-    id: e.id,
-    source: e.from,
-    target: e.to,
-  }));
+  const rfEdges: Edge[] = useMemo(
+    () =>
+      edges.map((e) => ({
+        id: e.id,
+        source: e.from,
+        target: e.to,
+      })),
+    [edges],
+  );
 
   const onNodesChange = useCallback(
     (changes: NodeChange[]) => {
-      const updatedRf = applyNodeChanges(changes, rfNodes);
+      const currentRf = nodes.map((n) => ({
+        id: n.id,
+        position: n.position,
+        data: { label: n.label },
+      }));
+      const updatedRf = applyNodeChanges(changes, currentRf);
       const updatedGraph = updatedRf.map((n) => ({
         id: n.id,
         label: n.data.label,
@@ -83,12 +103,17 @@ export default function GraphCanvas() {
       }));
       setGraphNodes(updatedGraph);
     },
-    [rfNodes, setGraphNodes],
+    [nodes, setGraphNodes],
   );
 
   const onEdgesChange = useCallback(
     (changes: EdgeChange[]) => {
-      const updatedRf = applyEdgeChanges(changes, rfEdges);
+      const currentRf = edges.map((e) => ({
+        id: e.id,
+        source: e.from,
+        target: e.to,
+      }));
+      const updatedRf = applyEdgeChanges(changes, currentRf);
       const updatedGraph = updatedRf.map((e) => ({
         id: e.id,
         from: e.source,
@@ -96,7 +121,7 @@ export default function GraphCanvas() {
       }));
       setGraphEdges(updatedGraph);
     },
-    [rfEdges, setGraphEdges],
+    [edges, setGraphEdges],
   );
 
   const onConnect = useCallback(
