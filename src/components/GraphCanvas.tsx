@@ -1,41 +1,114 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback } from "react";
 import ReactFlow, {
-  addEdge,
+  applyEdgeChanges,
+  applyNodeChanges,
   Background,
   Controls,
   MiniMap,
-  useEdgesState,
-  useNodesState,
   type Connection,
   type Edge,
-  type Node,
+  type Node as RFNode,
   type NodeMouseHandler,
+  type NodeChange,
+  type EdgeChange,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { useGraphStore } from "../store/graphStore";
+import { useAlgoStore } from "../store/algoState";
 
 export default function GraphCanvas() {
-  const [nodes, setNodes, onNodesChange] = useNodesState<Node[]>([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge[]>([]);
+  const nodes = useGraphStore((s) => s.nodes);
+  const edges = useGraphStore((s) => s.edges);
+  const setGraphNodes = useGraphStore((s) => s.setNodes);
+  const setGraphEdges = useGraphStore((s) => s.setEdges);
+  const addGraphNode = useGraphStore((s) => s.addNode);
+  const addGraphEdge = useGraphStore((s) => s.addEdge);
   const editMode = useGraphStore((s) => s.editMode);
   const getNextNodeId = useGraphStore((s) => s.getNextNodeId);
   const setEditMode = useGraphStore((s) => s.setEditMode);
   const selectedNodeForEdge = useGraphStore((s) => s.selectedNodeForEdge);
   const setSelectedNodeForEdge = useGraphStore((s) => s.setSelectedNodeForEdge);
+  const editable = useGraphStore((s) => s.editable);
 
-  // Écouter le reset depuis App
-  useEffect(() => {
-    const handleReset = () => {
-      setNodes([]);
-      setEdges([]);
-    };
-    window.addEventListener("reset-graph", handleReset);
-    return () => window.removeEventListener("reset-graph", handleReset);
-  }, [setNodes, setEdges]);
+  const algo = useAlgoStore((s) => ({
+    indexMap: s.indexMap,
+    onStackMap: s.onStackMap,
+    sccs: s.sccs,
+  }));
+
+  const sccColors = [
+    "#fca5a5",
+    "#6ee7b7",
+    "#93c5fd",
+    "#fcd34d",
+    "#e879f9",
+    "#a3e635",
+  ];
+
+  const getNodeColor = (id: string) => {
+    const sccIndex = algo.sccs.findIndex((s) => s.includes(id));
+    if (sccIndex !== -1) {
+      return sccColors[sccIndex % sccColors.length];
+    }
+    if (algo.onStackMap.get(id)) {
+      return "#bfdbfe"; // blue
+    }
+    if (algo.indexMap.has(id)) {
+      return "#fde68a"; // yellow
+    }
+    return "#d1d5db"; // gray
+  };
+
+  const rfNodes: RFNode<{ label: string }>[] = nodes.map((n) => ({
+    id: n.id,
+    position: n.position,
+    data: { label: n.label },
+    draggable: editable,
+    style: { backgroundColor: getNodeColor(n.id) },
+  }));
+
+  const rfEdges: Edge[] = edges.map((e) => ({
+    id: e.id,
+    source: e.from,
+    target: e.to,
+  }));
+
+  const onNodesChange = useCallback(
+    (changes: NodeChange[]) => {
+      const updatedRf = applyNodeChanges(changes, rfNodes);
+      const updatedGraph = updatedRf.map((n) => ({
+        id: n.id,
+        label: n.data.label,
+        position: n.position,
+      }));
+      setGraphNodes(updatedGraph);
+    },
+    [rfNodes, setGraphNodes],
+  );
+
+  const onEdgesChange = useCallback(
+    (changes: EdgeChange[]) => {
+      const updatedRf = applyEdgeChanges(changes, rfEdges);
+      const updatedGraph = updatedRf.map((e) => ({
+        id: e.id,
+        from: e.source,
+        to: e.target,
+      }));
+      setGraphEdges(updatedGraph);
+    },
+    [rfEdges, setGraphEdges],
+  );
 
   const onConnect = useCallback(
-    (connection: Connection) => setEdges((eds) => addEdge(connection, eds)),
-    [setEdges],
+    (connection: Connection) => {
+      if (!connection.source || !connection.target) return;
+      addGraphEdge({
+        id: `e-${connection.source}-${connection.target}`,
+        from: connection.source,
+        to: connection.target,
+      });
+    },
+    [addGraphEdge],
   );
 
   const handleCanvasClick = useCallback(
@@ -46,16 +119,14 @@ export default function GraphCanvas() {
       const x = event.clientX - bounds.left;
       const y = event.clientY - bounds.top;
 
-      const newNode: Node = {
+      addGraphNode({
         id: getNextNodeId(),
-        data: { label: `N${nodes.length + 1}` },
+        label: `N${nodes.length + 1}`,
         position: { x, y },
-      };
-
-      setNodes((nds) => nds.concat(newNode));
+      });
       setEditMode("none");
     },
-    [editMode, getNextNodeId, setNodes, setEditMode, nodes.length],
+    [editMode, getNextNodeId, addGraphNode, setEditMode, nodes.length],
   );
 
   const handleNodeClick: NodeMouseHandler = useCallback(
@@ -65,12 +136,11 @@ export default function GraphCanvas() {
         setEditMode("addEdgeStep2");
       } else if (editMode === "addEdgeStep2" && selectedNodeForEdge) {
         if (selectedNodeForEdge !== node.id) {
-          const newEdge: Edge = {
+          addGraphEdge({
             id: `e-${selectedNodeForEdge}-${node.id}`,
-            source: selectedNodeForEdge,
-            target: node.id,
-          };
-          setEdges((eds) => [...eds, newEdge]);
+            from: selectedNodeForEdge,
+            to: node.id,
+          });
         }
         setSelectedNodeForEdge(null);
         setEditMode("none");
@@ -79,7 +149,7 @@ export default function GraphCanvas() {
     [
       editMode,
       selectedNodeForEdge,
-      setEdges,
+      addGraphEdge,
       setEditMode,
       setSelectedNodeForEdge,
     ],
@@ -91,8 +161,8 @@ export default function GraphCanvas() {
       onClick={handleCanvasClick}
     >
       <ReactFlow
-        nodes={nodes}
-        edges={edges}
+        nodes={rfNodes}
+        edges={rfEdges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
