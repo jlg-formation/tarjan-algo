@@ -76,6 +76,11 @@ Fixe en bas de la page :
 - Layout **non responsive**, prévu pour écran desktop ≥ 1280px
 - Utilisation de Tailwind pour les espacements, flex layout et invisibilité conditionnelle
 
+## Règles UI
+
+- tailwindcss: tous les boutons doivent avoir cursor-pointer
+- utiliser une librairie d'icone (react-icons with fa)
+
 ---
 
 ## 🔮 Pistes ultérieures
