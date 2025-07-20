@@ -1,17 +1,31 @@
 import { create } from "zustand";
 
+export type NodeId = string;
+
+export interface GraphNode {
+  id: NodeId;
+  label: string;
+  position: { x: number; y: number };
+}
+
+export interface GraphEdge {
+  id: string;
+  from: NodeId;
+  to: NodeId;
+}
+
 export type EditMode = "none" | "addNode" | "addEdgeStep1" | "addEdgeStep2";
 
 export interface AlgoState {
   index: number;
-  stack: string[];
-  callStack: string[];
-  onStack: Set<string>;
-  indexMap: Record<string, number>;
-  lowlinkMap: Record<string, number>;
-  visited: Set<string>;
-  currentNode: string | null;
-  sccs: string[][];
+  stack: NodeId[];
+  callStack: NodeId[];
+  onStack: Set<NodeId>;
+  indexMap: Record<NodeId, number>;
+  lowlinkMap: Record<NodeId, number>;
+  visited: Set<NodeId>;
+  currentNode: NodeId | null;
+  sccs: NodeId[][];
   autoRun: boolean;
   intervalId: number | null;
 }
@@ -19,13 +33,22 @@ export interface AlgoState {
 interface GraphStore {
   editMode: EditMode;
   nodeCount: number;
-  selectedNodeForEdge: string | null;
+  selectedNodeForEdge: NodeId | null;
   algoState: AlgoState | null;
+  nodes: GraphNode[];
+  edges: GraphEdge[];
+  editable: boolean;
 
   setEditMode: (mode: EditMode) => void;
   getNextNodeId: () => string;
-  setSelectedNodeForEdge: (id: string | null) => void;
-  resetGraphState: () => void;
+  setSelectedNodeForEdge: (id: NodeId | null) => void;
+  addNode: (node: GraphNode) => void;
+  addEdge: (edge: GraphEdge) => void;
+  removeNode: (id: NodeId) => void;
+  setEditable: (value: boolean) => void;
+  resetGraph: () => void;
+  /** @deprecated use resetGraph */
+  resetGraphState?: () => void;
 
   initAlgoState: () => void;
   nextStep: () => void;
@@ -38,6 +61,9 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
   nodeCount: 0,
   selectedNodeForEdge: null,
   algoState: null,
+  nodes: [],
+  edges: [],
+  editable: true,
 
   setEditMode: (mode) => set({ editMode: mode }),
 
@@ -49,8 +75,31 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
 
   setSelectedNodeForEdge: (id) => set({ selectedNodeForEdge: id }),
 
+  addNode: (node) => set((s) => ({ nodes: [...s.nodes, node] })),
+
+  addEdge: (edge) => set((s) => ({ edges: [...s.edges, edge] })),
+
+  removeNode: (id) =>
+    set((s) => ({
+      nodes: s.nodes.filter((n) => n.id !== id),
+      edges: s.edges.filter((e) => e.from !== id && e.to !== id),
+    })),
+
+  setEditable: (value) => set({ editable: value }),
+
+  resetGraph: () => {
+    set({
+      nodes: [],
+      edges: [],
+      nodeCount: 0,
+      selectedNodeForEdge: null,
+      algoState: null,
+    });
+  },
+
+  // temporary alias for legacy code
   resetGraphState: () => {
-    set({ nodeCount: 0, selectedNodeForEdge: null, algoState: null });
+    get().resetGraph();
   },
 
   initAlgoState: () => {
