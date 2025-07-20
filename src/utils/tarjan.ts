@@ -1,0 +1,92 @@
+export type Graph = {
+  nodes: { id: string }[];
+  edges: { from: string; to: string }[];
+};
+
+export interface TarjanStateUpdate {
+  action: "visit" | "push" | "set-lowlink" | "pop-scc" | "skip";
+  currentNode: string;
+  stack: string[];
+  indexMap: Map<string, number>;
+  lowLinkMap: Map<string, number>;
+  onStackMap: Map<string, boolean>;
+  sccs: string[][];
+}
+
+export function* tarjanStepByStep(graph: Graph): Generator<TarjanStateUpdate> {
+  const indexMap = new Map<string, number>();
+  const lowLinkMap = new Map<string, number>();
+  const onStackMap = new Map<string, boolean>();
+  const stack: string[] = [];
+  const sccs: string[][] = [];
+  let index = 0;
+
+  const adjacency = new Map<string, string[]>();
+  for (const node of graph.nodes) {
+    adjacency.set(node.id, []);
+  }
+  for (const edge of graph.edges) {
+    const list = adjacency.get(edge.from);
+    if (list) list.push(edge.to);
+  }
+
+  function snapshot(
+    action: TarjanStateUpdate["action"],
+    currentNode: string,
+  ): TarjanStateUpdate {
+    return {
+      action,
+      currentNode,
+      stack: [...stack],
+      indexMap: new Map(indexMap),
+      lowLinkMap: new Map(lowLinkMap),
+      onStackMap: new Map(onStackMap),
+      sccs: sccs.map((s) => [...s]),
+    };
+  }
+
+  function* strongConnect(v: string): Generator<TarjanStateUpdate> {
+    indexMap.set(v, index);
+    lowLinkMap.set(v, index);
+    index += 1;
+    yield snapshot("visit", v);
+
+    stack.push(v);
+    onStackMap.set(v, true);
+    yield snapshot("push", v);
+
+    const neighbors = adjacency.get(v) ?? [];
+    for (const w of neighbors) {
+      if (!indexMap.has(w)) {
+        yield* strongConnect(w);
+        const newLow = Math.min(lowLinkMap.get(v)!, lowLinkMap.get(w)!);
+        lowLinkMap.set(v, newLow);
+        yield snapshot("set-lowlink", v);
+      } else if (onStackMap.get(w)) {
+        const newLow = Math.min(lowLinkMap.get(v)!, indexMap.get(w)!);
+        lowLinkMap.set(v, newLow);
+        yield snapshot("set-lowlink", v);
+      } else {
+        yield snapshot("skip", w);
+      }
+    }
+
+    if (lowLinkMap.get(v) === indexMap.get(v)) {
+      const component: string[] = [];
+      let w: string;
+      do {
+        w = stack.pop()!;
+        onStackMap.set(w, false);
+        component.push(w);
+      } while (w !== v);
+      sccs.push(component);
+      yield snapshot("pop-scc", v);
+    }
+  }
+
+  for (const node of graph.nodes) {
+    if (!indexMap.has(node.id)) {
+      yield* strongConnect(node.id);
+    }
+  }
+}
