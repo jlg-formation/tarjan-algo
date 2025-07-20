@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { useAlgoStore } from "./algoState";
 
 export type NodeId = string;
 
@@ -75,19 +76,28 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
 
   setSelectedNodeForEdge: (id) => set({ selectedNodeForEdge: id }),
 
-  addNode: (node) => set((s) => ({ nodes: [...s.nodes, node] })),
+  addNode: (node) => {
+    useAlgoStore.getState().resetAlgo();
+    set((s) => ({ nodes: [...s.nodes, node] }));
+  },
 
-  addEdge: (edge) => set((s) => ({ edges: [...s.edges, edge] })),
+  addEdge: (edge) => {
+    useAlgoStore.getState().resetAlgo();
+    set((s) => ({ edges: [...s.edges, edge] }));
+  },
 
-  removeNode: (id) =>
+  removeNode: (id) => {
+    useAlgoStore.getState().resetAlgo();
     set((s) => ({
       nodes: s.nodes.filter((n) => n.id !== id),
       edges: s.edges.filter((e) => e.from !== id && e.to !== id),
-    })),
+    }));
+  },
 
   setEditable: (value) => set({ editable: value }),
 
   resetGraph: () => {
+    useAlgoStore.getState().resetAlgo();
     set({
       nodes: [],
       edges: [],
