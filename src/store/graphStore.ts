@@ -46,6 +46,9 @@ interface GraphStore {
   addNode: (node: GraphNode) => void;
   addEdge: (edge: GraphEdge) => void;
   removeNode: (id: NodeId) => void;
+  removeEdge: (id: string) => void;
+  setNodes: (nodes: GraphNode[]) => void;
+  setEdges: (edges: GraphEdge[]) => void;
   setEditable: (value: boolean) => void;
   resetGraph: () => void;
   /** @deprecated use resetGraph */
@@ -92,6 +95,21 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
       nodes: s.nodes.filter((n) => n.id !== id),
       edges: s.edges.filter((e) => e.from !== id && e.to !== id),
     }));
+  },
+
+  removeEdge: (id) => {
+    useAlgoStore.getState().resetAlgo();
+    set((s) => ({ edges: s.edges.filter((e) => e.id !== id) }));
+  },
+
+  setNodes: (nodes) => {
+    useAlgoStore.getState().resetAlgo();
+    set({ nodes });
+  },
+
+  setEdges: (edges) => {
+    useAlgoStore.getState().resetAlgo();
+    set({ edges });
   },
 
   setEditable: (value) => set({ editable: value }),
