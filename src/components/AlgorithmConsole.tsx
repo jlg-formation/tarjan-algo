@@ -1,17 +1,22 @@
 import React from "react";
 import { useAlgoStore } from "../store/algoState";
+import { useGraphStore } from "../store/graphStore";
+import { useShallow } from "zustand/react/shallow";
 
 export default function AlgorithmConsole() {
-  const { indexMap, lowLinkMap, stack } = useAlgoStore((s) => ({
-    indexMap: s.indexMap,
-    lowLinkMap: s.lowLinkMap,
-    stack: s.stack,
-  }));
+  const { indexMap, lowLinkMap, stack } = useAlgoStore(
+    useShallow((s) => ({
+      indexMap: s.indexMap,
+      lowLinkMap: s.lowLinkMap,
+      stack: s.stack,
+    })),
+  );
+  const nodes = useGraphStore((s) => s.nodes);
 
-  const rows = Array.from(indexMap.keys()).map((id) => ({
-    id,
-    index: indexMap.get(id) ?? "",
-    lowlink: lowLinkMap.get(id) ?? "",
+  const rows = nodes.map((n) => ({
+    id: n.id,
+    index: indexMap.get(n.id) ?? "—",
+    lowlink: lowLinkMap.get(n.id) ?? "—",
   }));
 
   return (
