@@ -1,21 +1,10 @@
 import "./index.css";
 import GraphCanvas from "./components/GraphCanvas";
 import GraphEditorToolbar from "./components/GraphEditorToolbar";
-import { useGraphStore } from "./store/graphStore";
+import ControlPanel from "./components/ControlPanel";
 
 export default function App() {
   console.log("render app");
-  const startAutoRun = useGraphStore((s) => s.startAutoRun);
-  const stopAutoRun = useGraphStore((s) => s.stopAutoRun);
-  const autoRun = useGraphStore((s) => s.algoState?.autoRun ?? false);
-
-  const handleAutoRunToggle = () => {
-    if (autoRun) {
-      stopAutoRun();
-    } else {
-      startAutoRun();
-    }
-  };
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 text-gray-800">
@@ -40,39 +29,7 @@ export default function App() {
         {/* Right Panel - Algorithm Control */}
         <aside className="w-[20em] border-l border-gray-300 p-4 space-y-4 bg-white">
           <h2 className="font-semibold text-lg">Contrôle de l’algorithme</h2>
-          <button className="w-full bg-green-600 text-white px-4 py-2 rounded">
-            Démarrer
-          </button>
-          <button className="w-full bg-blue-500 text-white px-4 py-2 rounded">
-            Étape suivante
-          </button>
-          <button className="w-full bg-blue-500 text-white px-4 py-2 rounded">
-            Étape précédente
-          </button>
-          <button
-            className="w-full px-4 py-2 rounded text-white "
-            style={{ backgroundColor: autoRun ? "#DC2626" : "#6B7280" }}
-            onClick={handleAutoRunToggle}
-          >
-            {autoRun ? "Stop lecture automatique" : "Lecture automatique"}
-          </button>
-          <button className="w-full bg-yellow-500 text-white px-4 py-2 rounded">
-            Mode debug
-          </button>
-
-          <div className="mt-6">
-            <h3 className="text-md font-semibold">État de l’algo</h3>
-            <p className="text-sm text-gray-600 mt-2">Index / Lowlink :</p>
-            <ul className="text-sm list-disc list-inside">
-              <li>N1 : index = 0, lowlink = 0</li>
-              <li>N2 : index = 1, lowlink = 0</li>
-            </ul>
-            <p className="text-sm text-gray-600 mt-4">Pile :</p>
-            <div className="bg-gray-200 p-2 rounded">
-              <div className="bg-blue-200 p-1 my-1 rounded text-center">N2</div>
-              <div className="bg-blue-200 p-1 my-1 rounded text-center">N1</div>
-            </div>
-          </div>
+          <ControlPanel />
         </aside>
       </main>
 
