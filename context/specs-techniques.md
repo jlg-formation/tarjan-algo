@@ -43,12 +43,14 @@
 ## ⚙️ Gestion d’état (Zustand)
 
 ### `graphStore.ts`
+
 - `nodes: GraphNode[]`
 - `edges: GraphEdge[]`
 - `editable: boolean`
 - Fonctions : `addNode`, `addEdge`, `removeNode`, `setEditable`, `resetGraph`
 
 ### `algoState.ts`
+
 - `indexMap: Map<NodeId, number>`
 - `lowLinkMap: Map<NodeId, number>`
 - `onStackMap: Map<NodeId, boolean>`
@@ -70,6 +72,7 @@ function* tarjanStepByStep(graph: Graph): Generator<TarjanStateUpdate>
 ```
 
 Chaque `next()` donne :
+
 - état du graphe
 - action (visit, push, set-lowlink, pop-scc…)
 - mise à jour : index, lowlink, pile, SCC

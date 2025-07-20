@@ -25,6 +25,7 @@ La page est divisée verticalement en trois sections principales :
 ### 📐 Corps (`<main>`) : 3 colonnes en `flex`
 
 #### 🧭 1. Zone gauche (largeur fixe : `w-[20em]`)
+
 - Composant d’édition du graphe
   - Ajouter / supprimer sommets
   - Ajouter / supprimer arêtes
@@ -32,6 +33,7 @@ La page est divisée verticalement en trois sections principales :
 - Le graphe ne peut être édité que si l’algorithme n’est pas en cours
 
 #### 🔷 2. Zone centrale (flex-grow)
+
 - Affichage dynamique du **graphe orienté**
 - Utilise **React Flow**
 - Nœuds colorés selon leur état :
@@ -41,6 +43,7 @@ La page est divisée verticalement en trois sections principales :
   - Couleur unique par SCC
 
 #### ⚙️ 3. Zone droite (largeur fixe : `w-[20em]`)
+
 - **Boutons de contrôle** :
   - Démarrer / Aller en avant / Retour / Lecture auto / Mode debug
   - Inactifs = `invisible` (place conservée)

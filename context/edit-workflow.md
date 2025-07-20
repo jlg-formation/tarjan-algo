@@ -9,6 +9,7 @@ L’édition du graphe se fait **exclusivement dans un mode dédié** déclench�
 ### 🎮 Activation de l’édition
 
 L’utilisateur peut entrer en mode édition de deux façons :
+
 - ✅ En cliquant sur le bouton **"Éditer le graphe"**
 - ❌ En cliquant sur **"Effacer le graphe"**, qui demande une **confirmation** avant de réinitialiser complètement le graphe
 
@@ -19,12 +20,14 @@ L’utilisateur peut entrer en mode édition de deux façons :
 ## ➕ Ajout de nœuds
 
 ### Étapes :
+
 1. L’utilisateur clique sur le bouton **"Ajouter un nœud"**
 2. L’interface entre dans un **mode d’attente de clic**
 3. L’utilisateur clique **dans la zone de dessin du graphe**
 4. Un nouveau nœud est ajouté à cet emplacement avec un identifiant unique (`N1`, `N2`, etc.) provenant d’une **séquence auto-incrémentée**
 
 🎯 Comportement :
+
 - Le nœud est affiché immédiatement
 - Il est placé à la position du clic
 - Il est draggable uniquement en mode édition
@@ -34,16 +37,18 @@ L’utilisateur peut entrer en mode édition de deux façons :
 ## ➕ Ajout d’arêtes
 
 ### Étapes :
+
 1. L’utilisateur clique sur le bouton **"Ajouter une arête"**
-2. L’interface affiche une instruction :  
+2. L’interface affiche une instruction :
    > "Cliquez sur le nœud source"
 3. L’utilisateur clique sur un **premier nœud**
-4. L’interface affiche une nouvelle instruction :  
+4. L’interface affiche une nouvelle instruction :
    > "Cliquez sur le nœud cible"
 5. L’utilisateur clique sur un **second nœud**
 6. L’arête est dessinée automatiquement de la source vers la cible
 
 🎯 Comportement :
+
 - Si l’utilisateur clique deux fois sur le même nœud, l’arête **A → A** est autorisée uniquement si l’option est activée
 - L’arête n’est pas créée si une arête équivalente existe déjà
 - Chaque arête est orientée (flèche affichée)
@@ -78,4 +83,3 @@ L’utilisateur peut entrer en mode édition de deux façons :
   - Passe en mode "exécution"
 
 ---
-

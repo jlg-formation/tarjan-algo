@@ -35,7 +35,7 @@ export default function GraphCanvas() {
 
   const onConnect = useCallback(
     (connection: Connection) => setEdges((eds) => addEdge(connection, eds)),
-    [setEdges]
+    [setEdges],
   );
 
   const handleCanvasClick = useCallback(
@@ -55,7 +55,7 @@ export default function GraphCanvas() {
       setNodes((nds) => nds.concat(newNode));
       setEditMode("none");
     },
-    [editMode, getNextNodeId, setNodes, setEditMode, nodes.length]
+    [editMode, getNextNodeId, setNodes, setEditMode, nodes.length],
   );
 
   const handleNodeClick: NodeMouseHandler = useCallback(
@@ -82,7 +82,7 @@ export default function GraphCanvas() {
       setEdges,
       setEditMode,
       setSelectedNodeForEdge,
-    ]
+    ],
   );
 
   return (
