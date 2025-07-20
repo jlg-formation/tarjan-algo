@@ -1,5 +1,8 @@
 import { create } from "zustand";
+import { useGraphStore } from "./graphStore";
 import type { NodeId } from "./graphStore";
+import type { TarjanStateUpdate, Graph } from "../utils/tarjan";
+import { tarjanStepByStep } from "../utils/tarjan";
 
 export type AlgoStatus = "idle" | "running" | "done";
 
@@ -12,6 +15,7 @@ export interface AlgoState {
   currentIndex: number;
   currentStep: number;
   status: AlgoStatus;
+  generator: Generator<TarjanStateUpdate> | null;
 }
 
 interface AlgoStore extends AlgoState {
@@ -30,21 +34,47 @@ const initialState: AlgoState = {
   currentIndex: 0,
   currentStep: 0,
   status: "idle",
+  generator: null,
 };
 
 export const useAlgoStore = create<AlgoStore>((set) => ({
   ...initialState,
 
   startAlgo: () =>
-    set({
-      ...initialState,
-      status: "running",
+    set(() => {
+      const { nodes, edges } = useGraphStore.getState();
+      const graph: Graph = { nodes, edges };
+      const generator = tarjanStepByStep(graph);
+      return {
+        ...initialState,
+        status: "running",
+        generator,
+      };
     }),
 
   stepForward: () =>
-    set((state) => ({
-      currentStep: state.currentStep + 1,
-    })),
+    set((state) => {
+      if (state.status !== "running" || !state.generator) {
+        return state;
+      }
+
+      const next = state.generator.next();
+      if (next.done) {
+        return { ...state, status: "done" };
+      }
+
+      const update = next.value;
+      return {
+        ...state,
+        indexMap: update.indexMap,
+        lowLinkMap: update.lowLinkMap,
+        onStackMap: update.onStackMap,
+        stack: update.stack,
+        sccs: update.sccs,
+        currentIndex: update.indexMap.size,
+        currentStep: state.currentStep + 1,
+      };
+    }),
 
   stepBack: () =>
     set((state) => ({
