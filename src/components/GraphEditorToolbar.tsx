@@ -16,11 +16,11 @@ export default function GraphEditorToolbar() {
   const instruction = (() => {
     switch (editMode) {
       case "addNode":
-        return "Cliquez dans le graphe pour placer le n\u0153ud";
+        return "Cliquez dans le graphe pour placer le nœud";
       case "addEdgeStep1":
-        return "Cliquez sur le n\u0153ud source";
+        return "Cliquez sur le nœud source";
       case "addEdgeStep2":
-        return "Cliquez sur le n\u0153ud cible";
+        return "Cliquez sur le nœud cible";
       default:
         return null;
     }
@@ -33,14 +33,14 @@ export default function GraphEditorToolbar() {
         onClick={() => setEditMode("addNode")}
         disabled={!editable}
       >
-        Ajouter un n\u0153ud
+        Ajouter un n{"\u0153"}ud
       </button>
       <button
         className="w-full bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
         onClick={() => setEditMode("addEdgeStep1")}
         disabled={!editable}
       >
-        Ajouter une ar\u00eate
+        Ajouter une ar{"\u00ea"}te
       </button>
       <button
         className="w-full bg-red-600 text-white px-4 py-2 rounded disabled:opacity-50"
