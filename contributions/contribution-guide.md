@@ -17,7 +17,7 @@ git rebase master
 git push origin dev-1234
 ```
 
-# Accepter ou refuser un livraison
+## Accepter ou refuser un livraison
 
 ```
 # Ramener la branche chez soi et la tester
@@ -43,4 +43,19 @@ git push origin --delete dev-1234
 
 # Demander au développeur de continuer à travailler
 # Rien à faire...
+```
+
+## En cas de Pull Request sur Github
+
+Installer le Github CLI
+
+```
+# Lister les PR
+gh pr list
+
+# Ramener la branche pour la tester
+gh pr checkout 34
+
+# Si acceptation:
+gh pr merge 34
 ```
