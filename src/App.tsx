@@ -3,6 +3,8 @@ import GraphCanvas from "./components/GraphCanvas";
 import GraphEditorToolbar from "./components/GraphEditorToolbar";
 import ControlPanel from "./components/ControlPanel";
 import AlgorithmConsole from "./components/AlgorithmConsole";
+import ExplanationBox from "./components/ExplanationBox";
+import { useAlgoStore } from "./store/algoState";
 
 export default function App() {
   console.log("render app");
@@ -23,8 +25,9 @@ export default function App() {
         </aside>
 
         {/* Center Panel - Graph */}
-        <section className="flex-grow p-4 bg-gray-100">
+        <section className="flex-grow p-4 space-y-4 bg-gray-100">
           <GraphCanvas />
+          <ExplanationBox update={useAlgoStore((s) => s.lastUpdate)} />
         </section>
 
         {/* Right Panel - Algorithm Control */}
