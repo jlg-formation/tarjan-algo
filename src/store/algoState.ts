@@ -16,6 +16,7 @@ export interface AlgoState {
   currentStep: number;
   status: AlgoStatus;
   generator: Generator<TarjanStateUpdate> | null;
+  lastUpdate: TarjanStateUpdate | null;
 }
 
 interface AlgoStore extends AlgoState {
@@ -35,6 +36,7 @@ const initialState: AlgoState = {
   currentStep: 0,
   status: "idle",
   generator: null,
+  lastUpdate: null,
 };
 
 export const useAlgoStore = create<AlgoStore>((set) => ({
@@ -49,6 +51,7 @@ export const useAlgoStore = create<AlgoStore>((set) => ({
         ...initialState,
         status: "running",
         generator,
+        lastUpdate: null,
       };
     }),
 
@@ -73,12 +76,14 @@ export const useAlgoStore = create<AlgoStore>((set) => ({
         sccs: update.sccs,
         currentIndex: update.indexMap.size,
         currentStep: state.currentStep + 1,
+        lastUpdate: update,
       };
     }),
 
   stepBack: () =>
     set((state) => ({
       currentStep: Math.max(0, state.currentStep - 1),
+      lastUpdate: null,
     })),
 
   resetAlgo: () => set(initialState),
