@@ -1,14 +1,23 @@
 import React from "react";
+import { useAlgoStore } from "../store/algoState";
 import { useGraphStore } from "../store/graphStore";
 
 export default function GraphEditorToolbar() {
+  const status = useAlgoStore((s) => s.status);
   const editMode = useGraphStore((s) => s.editMode);
   const setEditMode = useGraphStore((s) => s.setEditMode);
   const resetGraph = useGraphStore((s) => s.resetGraph);
   const editable = useGraphStore((s) => s.editable);
 
+  const confirmAlgoReset = () =>
+    status === "idle" ||
+    confirm("L'algorithme en cours sera réinitialisé. Voulez-vous continuer ?");
+
   const handleResetGraph = () => {
-    if (confirm("Voulez-vous vraiment effacer le graphe ?")) {
+    if (
+      confirmAlgoReset() &&
+      confirm("Voulez-vous vraiment effacer le graphe ?")
+    ) {
       resetGraph();
     }
   };
@@ -30,17 +39,21 @@ export default function GraphEditorToolbar() {
     <div className="space-y-4">
       <button
         className="w-full bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
-        onClick={() => setEditMode("addNode")}
+        onClick={() => {
+          if (confirmAlgoReset()) setEditMode("addNode");
+        }}
         disabled={!editable}
       >
-        Ajouter un n{"\u0153"}ud
+        Ajouter un nœud
       </button>
       <button
         className="w-full bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
-        onClick={() => setEditMode("addEdgeStep1")}
+        onClick={() => {
+          if (confirmAlgoReset()) setEditMode("addEdgeStep1");
+        }}
         disabled={!editable}
       >
-        Ajouter une ar{"\u00ea"}te
+        Ajouter une arête
       </button>
       <button
         className="w-full bg-red-600 text-white px-4 py-2 rounded disabled:opacity-50"
