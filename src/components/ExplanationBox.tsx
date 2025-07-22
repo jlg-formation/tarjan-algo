@@ -20,6 +20,10 @@ export default function ExplanationBox({ update }: ExplanationBoxProps) {
         return `Détection d\u2019une composante depuis ${currentNode}.`;
       case "skip":
         return `Ar\u00eate vers ${currentNode} ignor\u00e9e.`;
+      case "enter":
+        return `Appel de strongConnect(${currentNode}).`;
+      case "return":
+        return `Retour de strongConnect(${currentNode}).`;
       default:
         return null;
     }
