@@ -22,7 +22,9 @@ export default function TheorySlide({ onClose }: TheorySlideProps) {
         >
           Fermer
         </button>
-        <ReactMarkdown className="prose">{theory}</ReactMarkdown>
+        <div className="prose">
+          <ReactMarkdown>{theory}</ReactMarkdown>
+        </div>
       </div>
     </div>
   );
