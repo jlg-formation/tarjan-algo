@@ -13,9 +13,9 @@
   "dependencies": {
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-markdown": "^10.1.0",
     "reactflow": "^11.11.4",
-    "zustand": "^5.0.6",
-    "react-markdown": "^9.1.9"
+    "zustand": "^5.0.6"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.1",
