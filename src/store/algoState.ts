@@ -3,6 +3,7 @@ import { useGraphStore } from "./graphStore";
 import type { NodeId } from "./graphStore";
 import type { TarjanStateUpdate, Graph } from "../utils/tarjan";
 import { tarjanStepByStep } from "../utils/tarjan";
+import { useHistoryStore } from "./history";
 
 export type AlgoStatus = "idle" | "running" | "done";
 
@@ -49,6 +50,7 @@ export const useAlgoStore = create<AlgoStore>((set) => ({
       const { nodes, edges } = useGraphStore.getState();
       const graph: Graph = { nodes, edges };
       const generator = tarjanStepByStep(graph);
+      useHistoryStore.getState().reset();
       return {
         ...initialState,
         status: "running",
@@ -69,6 +71,7 @@ export const useAlgoStore = create<AlgoStore>((set) => ({
       }
 
       const update = next.value;
+      useHistoryStore.getState().push(update);
       return {
         ...state,
         indexMap: update.indexMap,
@@ -84,10 +87,43 @@ export const useAlgoStore = create<AlgoStore>((set) => ({
     }),
 
   stepBack: () =>
-    set((state) => ({
-      currentStep: Math.max(0, state.currentStep - 1),
-      lastUpdate: null,
-    })),
+    set((state) => {
+      if (state.currentStep === 0) {
+        return state;
+      }
+
+      const { pop, last } = useHistoryStore.getState();
+      const removed = pop();
+      if (!removed) {
+        return state;
+      }
+
+      const previous = last();
+      if (!previous) {
+        return {
+          ...state,
+          ...initialState,
+          generator: state.generator,
+          status: "running",
+          currentStep: 0,
+          lastUpdate: null,
+        };
+      }
+
+      return {
+        ...state,
+        indexMap: previous.indexMap,
+        lowLinkMap: previous.lowLinkMap,
+        onStackMap: previous.onStackMap,
+        stack: previous.stack,
+        callStack: previous.callStack,
+        sccs: previous.sccs,
+        currentIndex: previous.indexMap.size,
+        currentStep: state.currentStep - 1,
+        lastUpdate: previous,
+        status: state.status === "done" ? "running" : state.status,
+      };
+    }),
 
   resetAlgo: () => set(initialState),
 }));
