@@ -10,10 +10,10 @@ const simpleGraph: Graph = {
 };
 
 describe("tarjanStepByStep", () => {
-  it("yields visit action first", () => {
+  it("yields enter action first", () => {
     const gen = tarjanStepByStep(simpleGraph);
     const step = gen.next().value;
-    expect(step.action).toBe("visit");
+    expect(step.action).toBe("enter");
     expect(step.currentNode).toBe("a");
   });
 

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useAlgoStore } from "../store/algoState";
 import { useGraphStore } from "../store/graphStore";
 import DebugCallTree from "./DebugCallTree";
+import TheorySlide from "./TheorySlide";
 
 export default function ControlPanel() {
   const status = useAlgoStore((s) => s.status);
@@ -103,6 +104,7 @@ export default function ControlPanel() {
         {showTheory ? "Masquer théorie" : "Voir théorie"}
       </button>
       {debugMode && <DebugCallTree />}
+      {showTheory && <TheorySlide onClose={handleToggleTheory} />}
     </div>
   );
 }
