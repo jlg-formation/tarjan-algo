@@ -4,9 +4,17 @@ export type Graph = {
 };
 
 export interface TarjanStateUpdate {
-  action: "visit" | "push" | "set-lowlink" | "pop-scc" | "skip";
+  action:
+    | "visit"
+    | "push"
+    | "set-lowlink"
+    | "pop-scc"
+    | "skip"
+    | "enter"
+    | "return";
   currentNode: string;
   stack: string[];
+  callStack: string[];
   indexMap: Map<string, number>;
   lowLinkMap: Map<string, number>;
   onStackMap: Map<string, boolean>;
@@ -18,6 +26,7 @@ export function* tarjanStepByStep(graph: Graph): Generator<TarjanStateUpdate> {
   const lowLinkMap = new Map<string, number>();
   const onStackMap = new Map<string, boolean>();
   const stack: string[] = [];
+  const callStack: string[] = [];
   const sccs: string[][] = [];
   let index = 0;
 
@@ -38,6 +47,7 @@ export function* tarjanStepByStep(graph: Graph): Generator<TarjanStateUpdate> {
       action,
       currentNode,
       stack: [...stack],
+      callStack: [...callStack],
       indexMap: new Map(indexMap),
       lowLinkMap: new Map(lowLinkMap),
       onStackMap: new Map(onStackMap),
@@ -46,6 +56,8 @@ export function* tarjanStepByStep(graph: Graph): Generator<TarjanStateUpdate> {
   }
 
   function* strongConnect(v: string): Generator<TarjanStateUpdate> {
+    callStack.push(v);
+    yield snapshot("enter", v);
     indexMap.set(v, index);
     lowLinkMap.set(v, index);
     index += 1;
@@ -82,6 +94,8 @@ export function* tarjanStepByStep(graph: Graph): Generator<TarjanStateUpdate> {
       sccs.push(component);
       yield snapshot("pop-scc", v);
     }
+    callStack.pop();
+    yield snapshot("return", v);
   }
 
   for (const node of graph.nodes) {

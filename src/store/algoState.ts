@@ -11,6 +11,7 @@ export interface AlgoState {
   lowLinkMap: Map<NodeId, number>;
   onStackMap: Map<NodeId, boolean>;
   stack: NodeId[];
+  callStack: NodeId[];
   sccs: NodeId[][];
   currentIndex: number;
   currentStep: number;
@@ -31,6 +32,7 @@ const initialState: AlgoState = {
   lowLinkMap: new Map(),
   onStackMap: new Map(),
   stack: [],
+  callStack: [],
   sccs: [],
   currentIndex: 0,
   currentStep: 0,
@@ -73,6 +75,7 @@ export const useAlgoStore = create<AlgoStore>((set) => ({
         lowLinkMap: update.lowLinkMap,
         onStackMap: update.onStackMap,
         stack: update.stack,
+        callStack: update.callStack,
         sccs: update.sccs,
         currentIndex: update.indexMap.size,
         currentStep: state.currentStep + 1,
