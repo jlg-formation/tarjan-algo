@@ -44,7 +44,7 @@ export default function ControlPanel() {
   const backHidden = status === "idle" || currentStep === 0;
   const autoRunHidden = status !== "running";
   const debugHidden = status === "idle";
-  const theoryHidden = status === "idle";
+  const theoryHidden = false;
 
   return (
     <div className="space-y-4">
