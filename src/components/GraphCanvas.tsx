@@ -11,6 +11,17 @@ import { getNextNodeLabel } from "../utils/graphHelpers";
 import { useAlgoStore } from "../store/algoState";
 import { useShallow } from "zustand/react/shallow";
 
+const SCC_COLORS = [
+  "fill-red-300",
+  "fill-green-300",
+  "fill-blue-300",
+  "fill-indigo-300",
+  "fill-pink-300",
+  "fill-amber-300",
+  "fill-lime-300",
+  "fill-teal-300",
+];
+
 interface DragEventLike {
   x: number;
   y: number;
@@ -56,9 +67,20 @@ export default function GraphCanvas() {
       if (selectedNodeForEdge === n.id) {
         return `${baseClass} fill-yellow-300`;
       }
-      return selectedNodes.includes(n.id)
-        ? `${baseClass} fill-gray-300`
-        : `${baseClass} fill-white`;
+      if (selectedNodes.includes(n.id)) {
+        return `${baseClass} fill-gray-300`;
+      }
+      if (n.status.sccIndex !== null) {
+        const color = SCC_COLORS[n.status.sccIndex % SCC_COLORS.length];
+        return `${baseClass} ${color}`;
+      }
+      if (n.status.onStack) {
+        return `${baseClass} fill-yellow-200`;
+      }
+      if (n.status.visited) {
+        return `${baseClass} fill-gray-200`;
+      }
+      return `${baseClass} fill-white`;
     },
     [selectedNodes, selectedNodeForEdge],
   );
