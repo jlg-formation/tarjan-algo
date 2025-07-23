@@ -71,12 +71,14 @@ Fixe en bas de la page :
   - Non visité, Visite en cours, Dans la pile, SCC trouvée
 - Une couleur différente par SCC détectée
 - Layout **non responsive**, prévu pour écran desktop ≥ 1280px
-- Utilisation de Tailwind pour les espacements, flex layout et invisibilité conditionnelle
+- Utilisation de Tailwind pour les espacements, flex layout et invisibilité
+  conditionnelle
 
 ## Règles UI
 
-- tailwindcss: tous les boutons doivent avoir cursor-pointer
-- utiliser une librairie d'icone (react-icons with fa)
+- Tous les boutons doivent afficher le curseur en forme de main via la classe
+  `cursor-pointer` de TailwindCSS
+- Utiliser une librairie d'icone (react-icons with fa)
 
 ---
 
