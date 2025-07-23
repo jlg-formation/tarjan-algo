@@ -203,7 +203,7 @@ export default function GraphCanvas() {
         );
       })
       .on("end", () => {
-        setCursor("cursor-pointer");
+        setCursor("");
       });
 
     const nodeGroups = svg
@@ -218,8 +218,14 @@ export default function GraphCanvas() {
         (d: GraphNode) => `translate(${d.position.x},${d.position.y})`,
       )
       .call(dragBehaviour)
-      .on("mouseenter", () => setCursor("cursor-pointer"))
-      .on("mouseleave", () => setCursor(""))
+      .on("mouseenter", () => {
+        if (cursor === "") {
+          setCursor("cursor-pointer");
+        }
+      })
+      .on("mouseleave", () => {
+        setCursor("");
+      })
       .on("click", (event: React.MouseEvent<SVGGElement>, d: GraphNode) => {
         event.stopPropagation();
         handleNodeClick(d.id);
@@ -235,7 +241,15 @@ export default function GraphCanvas() {
       .attr("text-anchor", "middle")
       .attr("dy", ".35em")
       .text((d: GraphNode) => d.label);
-  }, [nodes, edges, editable, getNodeClass, handleNodeClick, setGraphNodes]);
+  }, [
+    nodes,
+    edges,
+    editable,
+    getNodeClass,
+    handleNodeClick,
+    setGraphNodes,
+    cursor,
+  ]);
 
   return (
     <svg
