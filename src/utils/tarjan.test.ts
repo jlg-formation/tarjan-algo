@@ -1,5 +1,6 @@
 import { describe, it, expect } from "bun:test";
-import { tarjanStepByStep, Graph } from "./tarjan";
+import { tarjanStepByStep } from "./tarjan";
+import type { Graph } from "./tarjan";
 
 const simpleGraph: Graph = {
   nodes: [{ id: "a" }, { id: "b" }],

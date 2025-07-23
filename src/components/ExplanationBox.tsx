@@ -1,4 +1,4 @@
-import React from "react";
+import { useMemo } from "react";
 import type { TarjanStateUpdate } from "../utils/tarjan";
 
 interface ExplanationBoxProps {
@@ -6,7 +6,7 @@ interface ExplanationBoxProps {
 }
 
 export default function ExplanationBox({ update }: ExplanationBoxProps) {
-  const message = React.useMemo(() => {
+  const message = useMemo(() => {
     if (!update) return null;
     const { action, currentNode } = update;
     switch (action) {
