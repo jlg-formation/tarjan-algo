@@ -35,7 +35,7 @@ La page est divisée verticalement en trois sections principales :
 #### 🔷 2. Zone centrale (flex-grow)
 
 - Affichage dynamique du **graphe orienté**
-- Utilise **React Flow**
+- Utilise **D3**
 - Nœuds colorés selon leur état :
   - Gris = non visité
   - Jaune = en cours de visite

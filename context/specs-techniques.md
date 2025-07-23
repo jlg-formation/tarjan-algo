@@ -8,7 +8,7 @@
 - **TailwindCSS v4** – Styling utilitaire
 - **TypeScript** – Typage strict
 - **Zustand** – Gestion d’état légère et réactive
-- **React Flow** – Rendu graphique du graphe orienté
+- **D3** – Rendu graphique du graphe orienté
 - **Framer Motion** – Transitions animées
 - **React Markdown** – Rendu d’explication théorique en markdown
 - **Vitest** – Tests unitaires
@@ -22,7 +22,7 @@
 /src
 ├── App.tsx
 ├── components/
-│   ├── GraphCanvas.tsx            # Affiche le graphe avec React Flow
+│   ├── GraphCanvas.tsx            # Affiche le graphe avec D3
 │   ├── GraphEditorToolbar.tsx     # Actions pour modifier le graphe (édition)
 │   ├── ControlPanel.tsx           # Boutons : démarrer, étape suivante/précédente, debug
 │   ├── AlgorithmConsole.tsx       # Pile, index, lowlink, SCC en temps réel
@@ -111,7 +111,7 @@ interface TarjanStateUpdate {
 
 ## 🎨 UI / UX
 
-- React Flow permet :
+- D3 permet :
   - Drag & drop de nœuds
   - Ajout d’arêtes
   - Rendu clair du graphe dirigé
