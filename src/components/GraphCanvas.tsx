@@ -121,6 +121,27 @@ export default function GraphCanvas() {
       .attr("fill", "#555");
 
     const nodeMap = new Map(nodes.map((n) => [n.id, n]));
+    const NODE_RADIUS = 20;
+
+    const getLineCoords = (
+      from: GraphNode | undefined,
+      to: GraphNode | undefined,
+    ) => {
+      if (!from || !to) {
+        return { x1: 0, y1: 0, x2: 0, y2: 0 };
+      }
+      const dx = to.position.x - from.position.x;
+      const dy = to.position.y - from.position.y;
+      const dist = Math.hypot(dx, dy) || 1;
+      const offX = (dx / dist) * NODE_RADIUS;
+      const offY = (dy / dist) * NODE_RADIUS;
+      return {
+        x1: from.position.x + offX,
+        y1: from.position.y + offY,
+        x2: to.position.x - offX,
+        y2: to.position.y - offY,
+      };
+    };
 
     svg
       .append("g")
@@ -130,10 +151,26 @@ export default function GraphCanvas() {
       .join("line")
       .attr("stroke", "#666")
       .attr("marker-end", "url(#arrow)")
-      .attr("x1", (d: GraphEdge) => nodeMap.get(d.from)?.position.x ?? 0)
-      .attr("y1", (d: GraphEdge) => nodeMap.get(d.from)?.position.y ?? 0)
-      .attr("x2", (d: GraphEdge) => nodeMap.get(d.to)?.position.x ?? 0)
-      .attr("y2", (d: GraphEdge) => nodeMap.get(d.to)?.position.y ?? 0);
+      .attr(
+        "x1",
+        (d: GraphEdge) =>
+          getLineCoords(nodeMap.get(d.from), nodeMap.get(d.to)).x1,
+      )
+      .attr(
+        "y1",
+        (d: GraphEdge) =>
+          getLineCoords(nodeMap.get(d.from), nodeMap.get(d.to)).y1,
+      )
+      .attr(
+        "x2",
+        (d: GraphEdge) =>
+          getLineCoords(nodeMap.get(d.from), nodeMap.get(d.to)).x2,
+      )
+      .attr(
+        "y2",
+        (d: GraphEdge) =>
+          getLineCoords(nodeMap.get(d.from), nodeMap.get(d.to)).y2,
+      );
 
     const dragBehaviour = d3Drag().on(
       "drag",
@@ -174,7 +211,7 @@ export default function GraphCanvas() {
 
     nodeGroups
       .append("circle")
-      .attr("r", 20)
+      .attr("r", NODE_RADIUS)
       .attr("class", (d: GraphNode) => getNodeClass(d));
 
     nodeGroups
