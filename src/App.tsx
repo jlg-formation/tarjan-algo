@@ -18,16 +18,21 @@ export default function App() {
 
       {/* Main layout */}
       <main className="flex flex-1 overflow-hidden">
+        {/* Canvas area */}
         <section className="flex-grow space-y-4 bg-gray-100 p-4">
           <GraphEditorToolbar />
           <GraphCanvas />
           <ExplanationBox update={useAlgoStore((s) => s.lastUpdate)} />
         </section>
 
-        {/* Right Panel - Algorithm Control */}
+        {/* Control panel */}
         <aside className="w-[20em] space-y-4 border-l border-gray-300 bg-white p-4">
-          <h2 className="text-lg font-semibold">Contrôle de l’algorithme</h2>
+          <h2 className="text-lg font-semibold">Contrôle</h2>
           <ControlPanel />
+        </aside>
+
+        {/* Algorithm console */}
+        <aside className="w-[20em] border-l border-gray-300 bg-gray-50 p-4">
           <AlgorithmConsole />
         </aside>
       </main>
