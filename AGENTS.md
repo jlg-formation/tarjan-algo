@@ -1,12 +1,14 @@
 # AGENTS.md – Instructions pour les agents IA (Copilot, Codex, etc.)
 
-Ce fichier fournit le **contexte et les règles** à respecter pour tous les agents d’assistance au développement du projet **Trajan Algo**.
+Ce fichier fournit le **contexte et les règles** à respecter pour tous les
+agents d’assistance au développement du projet **Trajan Algo**.
 
 ---
 
 ## 📁 Répertoire `./context`
 
-Ce répertoire contient tous les fichiers utiles à la compréhension fonctionnelle, technique et visuelle du projet.
+Ce répertoire contient tous les fichiers utiles à la compréhension
+fonctionnelle, technique et visuelle du projet.
 
 ### 🔖 Spécifications disponibles
 
@@ -47,7 +49,8 @@ Lancer `bun run lint`
 
 Lancer `bun run build`
 
-If the code does not build, please check step by step why and correct until it correctly build.
+Si la commande de build échoue, corriger le code, étape par étape jusque quand
+cela build avec succès.
 
 ---
 
@@ -69,8 +72,10 @@ chore:    maintenance ou dépendances
 
 ## ⚙️ Suggestions supplémentaires
 
-- Le graphe est manipulé via React Flow : tous les composants doivent être **compatibles avec son système de nœuds et d’arêtes**
-- Tous les états doivent être centralisés dans Zustand, évitez `useState` pour des données partagées
+- Le graphe est manipulé via React Flow : tous les composants doivent être
+  **compatibles avec son système de nœuds et d’arêtes**
+- Tous les états doivent être centralisés dans Zustand, évitez `useState` pour
+  des données partagées
 - Le projet n’a **pas de backend**
 - Le code doit rester modulaire : un composant = un rôle
 - Préférer des fonctions pures dans `utils/`
@@ -81,4 +86,5 @@ chore:    maintenance ou dépendances
 
 ## 🧠 Utilisation des fichiers de contexte
 
-Avant d’assister à la génération de code, **lisez les fichiers Markdown du répertoire `./context`**. Ils contiennent toutes les contraintes nécessaires.
+Avant d’assister à la génération de code, **lisez les fichiers Markdown du
+répertoire `./context`**. Ils contiennent toutes les contraintes nécessaires.
