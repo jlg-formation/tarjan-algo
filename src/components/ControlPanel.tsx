@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useAlgoStore } from "../store/algoState";
 import { useGraphStore } from "../store/graphStore";
 import DebugCallTree from "./DebugCallTree";
@@ -10,23 +10,15 @@ export default function ControlPanel() {
   const startAlgo = useAlgoStore((s) => s.startAlgo);
   const stepForward = useAlgoStore((s) => s.stepForward);
   const stepBack = useAlgoStore((s) => s.stepBack);
+  const autoRunning = useAlgoStore((s) => s.autoRunning);
+  const startAutoRun = useAlgoStore((s) => s.startAutoRun);
+  const stopAutoRun = useAlgoStore((s) => s.stopAutoRun);
+  const delay = useAlgoStore((s) => s.delay);
+  const setDelay = useAlgoStore((s) => s.setDelay);
   const setEditable = useGraphStore((s) => s.setEditable);
 
-  const [autoRun, setAutoRun] = useState(false);
   const [debugMode, setDebugMode] = useState(false);
   const [showTheory, setShowTheory] = useState(false);
-
-  useEffect(() => {
-    if (!autoRun) return;
-    const id = window.setInterval(() => {
-      if (useAlgoStore.getState().status === "running") {
-        useAlgoStore.getState().stepForward();
-      } else {
-        setAutoRun(false);
-      }
-    }, 1000);
-    return () => clearInterval(id);
-  }, [autoRun]);
 
   const handleStart = () => {
     startAlgo();
@@ -35,7 +27,13 @@ export default function ControlPanel() {
 
   const handleStepForward = () => stepForward();
   const handleStepBack = () => stepBack();
-  const handleToggleAutoRun = () => setAutoRun((v) => !v);
+  const handleToggleAutoRun = () => {
+    if (autoRunning) {
+      stopAutoRun();
+    } else {
+      startAutoRun();
+    }
+  };
   const handleToggleDebug = () => setDebugMode((v) => !v);
   const handleToggleTheory = () => setShowTheory((v) => !v);
 
@@ -79,12 +77,26 @@ export default function ControlPanel() {
         className={`w-full px-4 py-2 rounded text-white ${
           autoRunHidden ? "invisible" : ""
         }`}
-        style={{ backgroundColor: autoRun ? "#DC2626" : "#6B7280" }}
+        style={{ backgroundColor: autoRunning ? "#DC2626" : "#6B7280" }}
         onClick={handleToggleAutoRun}
         disabled={autoRunHidden}
       >
-        {autoRun ? "Stop lecture automatique" : "Lecture automatique"}
+        {autoRunning ? "Stop lecture automatique" : "Lecture automatique"}
       </button>
+      {!autoRunHidden && (
+        <div className="flex items-center space-x-2">
+          <input
+            type="range"
+            min="500"
+            max="3000"
+            step="100"
+            value={delay}
+            onChange={(e) => setDelay(Number(e.target.value))}
+            className="flex-grow"
+          />
+          <span className="text-sm">{delay} ms</span>
+        </div>
+      )}
       <button
         className={`w-full bg-yellow-500 text-white px-4 py-2 rounded ${
           debugHidden ? "invisible" : ""

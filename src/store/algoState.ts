@@ -19,6 +19,9 @@ export interface AlgoState {
   status: AlgoStatus;
   generator: Generator<TarjanStateUpdate> | null;
   lastUpdate: TarjanStateUpdate | null;
+  autoRunning: boolean;
+  intervalId: number | null;
+  delay: number;
 }
 
 interface AlgoStore extends AlgoState {
@@ -26,6 +29,9 @@ interface AlgoStore extends AlgoState {
   stepForward: () => void;
   stepBack: () => void;
   resetAlgo: () => void;
+  startAutoRun: () => void;
+  stopAutoRun: () => void;
+  setDelay: (ms: number) => void;
 }
 
 const initialState: AlgoState = {
@@ -40,26 +46,34 @@ const initialState: AlgoState = {
   status: "idle",
   generator: null,
   lastUpdate: null,
+  autoRunning: false,
+  intervalId: null,
+  delay: 1000,
 };
 
-export const useAlgoStore = create<AlgoStore>((set) => ({
+export const useAlgoStore = create<AlgoStore>((set, get) => ({
   ...initialState,
 
   startAlgo: () =>
     set(() => {
+      const { intervalId } = get();
+      if (intervalId !== null) {
+        clearInterval(intervalId);
+      }
       const { nodes, edges } = useGraphStore.getState();
       const graph: Graph = { nodes, edges };
       const generator = tarjanStepByStep(graph);
       useHistoryStore.getState().reset();
       return {
         ...initialState,
+        delay: get().delay,
         status: "running",
         generator,
         lastUpdate: null,
       };
     }),
 
-  stepForward: () =>
+  stepForward: () => {
     set((state) => {
       if (state.status !== "running" || !state.generator) {
         return state;
@@ -84,7 +98,11 @@ export const useAlgoStore = create<AlgoStore>((set) => ({
         currentStep: state.currentStep + 1,
         lastUpdate: update,
       };
-    }),
+    });
+    if (get().status === "done") {
+      get().stopAutoRun();
+    }
+  },
 
   stepBack: () =>
     set((state) => {
@@ -125,5 +143,38 @@ export const useAlgoStore = create<AlgoStore>((set) => ({
       };
     }),
 
-  resetAlgo: () => set(initialState),
+  startAutoRun: () => {
+    const { intervalId, delay, stepForward, status } = get();
+    if (status !== "running") return;
+    if (intervalId !== null) {
+      clearInterval(intervalId);
+    }
+    const id = window.setInterval(() => {
+      const { status: st } = get();
+      if (st !== "running") {
+        get().stopAutoRun();
+        return;
+      }
+      stepForward();
+    }, delay);
+    set({ autoRunning: true, intervalId: id });
+  },
+
+  stopAutoRun: () => {
+    const { intervalId } = get();
+    if (intervalId !== null) {
+      clearInterval(intervalId);
+    }
+    set({ autoRunning: false, intervalId: null });
+  },
+
+  setDelay: (ms: number) => set({ delay: ms }),
+
+  resetAlgo: () => {
+    const { intervalId } = get();
+    if (intervalId !== null) {
+      clearInterval(intervalId);
+    }
+    set(initialState);
+  },
 }));
