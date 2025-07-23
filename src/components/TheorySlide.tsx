@@ -28,7 +28,7 @@ export default function TheorySlide({ onClose }: TheorySlideProps) {
         onClick={(e) => e.stopPropagation()}
       >
         <button
-          className="mb-4 rounded bg-gray-200 px-2 py-1 text-sm"
+          className="mb-4 cursor-pointer rounded bg-gray-200 px-2 py-1 text-sm"
           onClick={handleClose}
         >
           Fermer
