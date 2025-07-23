@@ -21,10 +21,8 @@ L’utilisateur peut entrer en mode édition de deux façons :
 
 ### Étapes :
 
-1. L’utilisateur clique sur le bouton **"Ajouter un nœud"**
-2. L’interface entre dans un **mode d’attente de clic**
-3. L’utilisateur clique **dans la zone de dessin du graphe**
-4. Un nouveau nœud est ajouté à cet emplacement avec un identifiant unique (`N1`, `N2`, etc.) provenant d’une **séquence auto-incrémentée**
+1. L’utilisateur clique **dans la zone de dessin du graphe**
+2. Un nouveau nœud est ajouté à cet emplacement avec un identifiant unique (`N1`, `N2`, etc.) provenant d’une **séquence auto-incrémentée**
 
 🎯 Comportement :
 
@@ -58,7 +56,8 @@ L’utilisateur peut entrer en mode édition de deux façons :
 ## 🗑️ Suppression
 
 - Supprimer un **nœud** :
-  - Option : cliquer sur le nœud + bouton `🗑 Supprimer`
+  - Cliquer sur le nœud pour le sélectionner (sélection multiple possible)
+  - Un bouton `🗑 Supprimer` apparaît dans la barre d'outils
   - Toutes les arêtes liées sont supprimées aussi
 
 - Supprimer une **arête** :

@@ -22,7 +22,7 @@ export interface GraphEdge {
   to: NodeId;
 }
 
-export type EditMode = "none" | "addNode" | "addEdgeStep1" | "addEdgeStep2";
+export type EditMode = "none" | "addEdgeStep1" | "addEdgeStep2";
 
 export interface AlgoState {
   index: number;
@@ -42,6 +42,7 @@ interface GraphStore {
   editMode: EditMode;
   nodeCount: number;
   selectedNodeForEdge: NodeId | null;
+  selectedNodes: NodeId[];
   algoState: AlgoState | null;
   nodes: GraphNode[];
   edges: GraphEdge[];
@@ -50,6 +51,9 @@ interface GraphStore {
   setEditMode: (mode: EditMode) => void;
   getNextNodeId: () => string;
   setSelectedNodeForEdge: (id: NodeId | null) => void;
+  toggleNodeSelection: (id: NodeId) => void;
+  clearSelection: () => void;
+  removeSelectedNodes: () => void;
   addNode: (node: Omit<GraphNode, "status">) => void;
   addEdge: (edge: GraphEdge) => void;
   removeNode: (id: NodeId) => void;
@@ -77,6 +81,7 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
   editMode: "none",
   nodeCount: 0,
   selectedNodeForEdge: null,
+  selectedNodes: [],
   algoState: null,
   nodes: [],
   edges: [],
@@ -91,6 +96,25 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
   },
 
   setSelectedNodeForEdge: (id) => set({ selectedNodeForEdge: id }),
+
+  toggleNodeSelection: (id) =>
+    set((s) => ({
+      selectedNodes: s.selectedNodes.includes(id)
+        ? s.selectedNodes.filter((n) => n !== id)
+        : [...s.selectedNodes, id],
+    })),
+
+  clearSelection: () => set({ selectedNodes: [] }),
+
+  removeSelectedNodes: () =>
+    set((s) => ({
+      nodes: s.nodes.filter((n) => !s.selectedNodes.includes(n.id)),
+      edges: s.edges.filter(
+        (e) =>
+          !s.selectedNodes.includes(e.from) && !s.selectedNodes.includes(e.to),
+      ),
+      selectedNodes: [],
+    })),
 
   addNode: (node) => {
     useAlgoStore.getState().resetAlgo();

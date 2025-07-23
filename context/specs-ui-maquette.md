@@ -36,11 +36,8 @@ La page est divisée verticalement en trois sections principales :
 
 - Affichage dynamique du **graphe orienté**
 - Utilise **D3**
-- Nœuds colorés selon leur état :
-  - Gris = non visité
-  - Jaune = en cours de visite
-  - Bleu = dans la pile
-  - Couleur unique par SCC
+- Nœuds par défaut **blancs avec un contour noir**
+- Nœuds sélectionnés **gris** (contour noir)
 
 #### ⚙️ 3. Zone droite (largeur fixe : `w-[20em]`)
 

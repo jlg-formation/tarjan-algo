@@ -5,15 +5,6 @@ import { useGraphStore, type GraphNode } from "../store/graphStore";
 import { useAlgoStore } from "../store/algoState";
 import { useShallow } from "zustand/react/shallow";
 
-const sccClasses = [
-  "bg-red-300",
-  "bg-green-300",
-  "bg-purple-300",
-  "bg-yellow-300",
-  "bg-pink-300",
-  "bg-lime-300",
-];
-
 export default function GraphCanvas() {
   const nodes = useGraphStore((s) => s.nodes);
   const edges = useGraphStore((s) => s.edges);
@@ -40,17 +31,16 @@ export default function GraphCanvas() {
     updateStatuses({ indexMap, onStackMap, sccs });
   }, [indexMap, onStackMap, sccs, updateStatuses]);
 
-  const baseClass = "text-xs rounded px-2 py-1";
-  const getNodeClass = useCallback((n: GraphNode) => {
-    if (n.status.sccIndex !== null) {
-      return `${baseClass} ${
-        sccClasses[n.status.sccIndex % sccClasses.length]
-      }`;
-    }
-    if (n.status.onStack) return `${baseClass} bg-blue-300`;
-    if (n.status.visited) return `${baseClass} bg-yellow-300`;
-    return `${baseClass} bg-gray-300`;
-  }, []);
+  const baseClass = "stroke-black stroke-2";
+  const selectedNodes = useGraphStore((s) => s.selectedNodes);
+  const toggleNodeSelection = useGraphStore((s) => s.toggleNodeSelection);
+  const getNodeClass = useCallback(
+    (n: GraphNode) =>
+      selectedNodes.includes(n.id)
+        ? `${baseClass} fill-gray-300`
+        : `${baseClass} fill-white`,
+    [selectedNodes],
+  );
 
   const svgRef = useRef<SVGSVGElement | null>(null);
 
@@ -69,6 +59,8 @@ export default function GraphCanvas() {
         }
         setSelectedNodeForEdge(null);
         setEditMode("none");
+      } else if (editable && editMode === "none") {
+        toggleNodeSelection(id);
       }
     },
     [
@@ -77,12 +69,14 @@ export default function GraphCanvas() {
       addGraphEdge,
       setEditMode,
       setSelectedNodeForEdge,
+      editable,
+      toggleNodeSelection,
     ],
   );
 
   const handleCanvasClick = useCallback(
     (event: React.MouseEvent<SVGSVGElement>) => {
-      if (editMode !== "addNode") return;
+      if (!editable || editMode !== "none") return;
       const bounds = event.currentTarget.getBoundingClientRect();
       const x = event.clientX - bounds.left;
       const y = event.clientY - bounds.top;
@@ -91,9 +85,8 @@ export default function GraphCanvas() {
         label: `N${nodes.length + 1}`,
         position: { x, y },
       });
-      setEditMode("none");
     },
-    [editMode, getNextNodeId, addGraphNode, setEditMode, nodes.length],
+    [editable, editMode, getNextNodeId, addGraphNode, nodes.length],
   );
 
   useEffect(() => {
