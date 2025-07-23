@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useEffect } from "react";
 import ReactFlow, {
   applyEdgeChanges,
   applyNodeChanges,
@@ -14,16 +14,17 @@ import ReactFlow, {
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { useGraphStore } from "../store/graphStore";
+import type { GraphNode } from "../store/graphStore";
 import { useAlgoStore } from "../store/algoState";
 import { useShallow } from "zustand/react/shallow";
 
-const sccColors = [
-  "#fca5a5",
-  "#6ee7b7",
-  "#93c5fd",
-  "#fcd34d",
-  "#e879f9",
-  "#a3e635",
+const sccClasses = [
+  "bg-red-300",
+  "bg-green-300",
+  "bg-purple-300",
+  "bg-yellow-300",
+  "bg-pink-300",
+  "bg-lime-300",
 ];
 
 export default function GraphCanvas() {
@@ -40,29 +41,32 @@ export default function GraphCanvas() {
   const setSelectedNodeForEdge = useGraphStore((s) => s.setSelectedNodeForEdge);
   const editable = useGraphStore((s) => s.editable);
 
-  const algo = useAlgoStore(
+  const { indexMap, onStackMap, sccs } = useAlgoStore(
     useShallow((s) => ({
       indexMap: s.indexMap,
       onStackMap: s.onStackMap,
       sccs: s.sccs,
     })),
   );
+  const updateStatuses = useGraphStore((s) => s.updateNodeStatuses);
 
-  const getNodeColor = useCallback(
-    (id: string) => {
-      const sccIndex = algo.sccs.findIndex((s) => s.includes(id));
-      if (sccIndex !== -1) {
-        return sccColors[sccIndex % sccColors.length];
+  useEffect(() => {
+    updateStatuses({ indexMap, onStackMap, sccs });
+  }, [indexMap, onStackMap, sccs, updateStatuses]);
+
+  const baseClass = "text-xs rounded px-2 py-1";
+  const getNodeClass = useCallback(
+    (n: GraphNode) => {
+      if (n.status.sccIndex !== null) {
+        return `${baseClass} ${
+          sccClasses[n.status.sccIndex % sccClasses.length]
+        }`;
       }
-      if (algo.onStackMap.get(id)) {
-        return "#bfdbfe"; // blue
-      }
-      if (algo.indexMap.has(id)) {
-        return "#fde68a"; // yellow
-      }
-      return "#d1d5db"; // gray
+      if (n.status.onStack) return `${baseClass} bg-blue-300`;
+      if (n.status.visited) return `${baseClass} bg-yellow-300`;
+      return `${baseClass} bg-gray-300`;
     },
-    [algo],
+    [nodes],
   );
 
   const rfNodes: RFNode<{ label: string }>[] = useMemo(
@@ -72,9 +76,9 @@ export default function GraphCanvas() {
         position: n.position,
         data: { label: n.label },
         draggable: editable,
-        style: { backgroundColor: getNodeColor(n.id) },
+        className: getNodeClass(n),
       })),
-    [nodes, editable, getNodeColor],
+    [nodes, editable, getNodeClass],
   );
 
   const rfEdges: Edge[] = useMemo(

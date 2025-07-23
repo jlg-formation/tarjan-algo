@@ -3,10 +3,17 @@ import { useAlgoStore } from "./algoState";
 
 export type NodeId = string;
 
+export interface NodeStatus {
+  visited: boolean;
+  onStack: boolean;
+  sccIndex: number | null;
+}
+
 export interface GraphNode {
   id: NodeId;
   label: string;
   position: { x: number; y: number };
+  status: NodeStatus;
 }
 
 export interface GraphEdge {
@@ -43,16 +50,22 @@ interface GraphStore {
   setEditMode: (mode: EditMode) => void;
   getNextNodeId: () => string;
   setSelectedNodeForEdge: (id: NodeId | null) => void;
-  addNode: (node: GraphNode) => void;
+  addNode: (node: Omit<GraphNode, "status">) => void;
   addEdge: (edge: GraphEdge) => void;
   removeNode: (id: NodeId) => void;
   removeEdge: (id: string) => void;
-  setNodes: (nodes: GraphNode[]) => void;
+  setNodes: (nodes: Omit<GraphNode, "status">[]) => void;
   setEdges: (edges: GraphEdge[]) => void;
   setEditable: (value: boolean) => void;
   resetGraph: () => void;
   /** @deprecated use resetGraph */
   resetGraphState?: () => void;
+
+  updateNodeStatuses: (params: {
+    indexMap: Map<NodeId, number>;
+    onStackMap: Map<NodeId, boolean>;
+    sccs: NodeId[][];
+  }) => void;
 
   initAlgoState: () => void;
   nextStep: () => void;
@@ -81,7 +94,11 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
 
   addNode: (node) => {
     useAlgoStore.getState().resetAlgo();
-    set((s) => ({ nodes: [...s.nodes, node] }));
+    const withStatus: GraphNode = {
+      ...node,
+      status: { visited: false, onStack: false, sccIndex: null },
+    };
+    set((s) => ({ nodes: [...s.nodes, withStatus] }));
   },
 
   addEdge: (edge) => {
@@ -104,7 +121,12 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
 
   setNodes: (nodes) => {
     useAlgoStore.getState().resetAlgo();
-    set({ nodes });
+    set({
+      nodes: nodes.map((n) => ({
+        ...n,
+        status: { visited: false, onStack: false, sccIndex: null },
+      })),
+    });
   },
 
   setEdges: (edges) => {
@@ -128,6 +150,24 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
   // temporary alias for legacy code
   resetGraphState: () => {
     get().resetGraph();
+  },
+
+  updateNodeStatuses: ({ indexMap, onStackMap, sccs }) => {
+    set((state) => ({
+      nodes: state.nodes.map((n) => {
+        const visited = indexMap.has(n.id);
+        const onStack = onStackMap.get(n.id) ?? false;
+        const idx = sccs.findIndex((s) => s.includes(n.id));
+        return {
+          ...n,
+          status: {
+            visited,
+            onStack,
+            sccIndex: idx === -1 ? null : idx,
+          },
+        };
+      }),
+    }));
   },
 
   initAlgoState: () => {
