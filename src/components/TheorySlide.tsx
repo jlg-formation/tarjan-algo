@@ -20,7 +20,7 @@ export default function TheorySlide({ onClose }: TheorySlideProps) {
 
   return (
     <div
-      className={`bg-opacity-40 fixed inset-0 flex bg-black transition-opacity duration-300 ${visible ? "opacity-100" : "opacity-0"}`}
+      className={`fixed inset-0 flex bg-black/40 transition-opacity duration-300`}
       onClick={handleClose}
     >
       <div

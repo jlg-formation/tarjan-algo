@@ -47,7 +47,7 @@ export default function ControlPanel() {
   return (
     <div className="space-y-4">
       <button
-        className={`w-full bg-green-600 text-white px-4 py-2 rounded ${
+        className={`w-full rounded bg-green-600 px-4 py-2 text-white ${
           startHidden ? "invisible" : ""
         }`}
         onClick={handleStart}
@@ -56,7 +56,7 @@ export default function ControlPanel() {
         Démarrer l’algorithme
       </button>
       <button
-        className={`w-full bg-blue-500 text-white px-4 py-2 rounded ${
+        className={`w-full rounded bg-blue-500 px-4 py-2 text-white ${
           forwardHidden ? "invisible" : ""
         }`}
         onClick={handleStepForward}
@@ -65,7 +65,7 @@ export default function ControlPanel() {
         Étape suivante
       </button>
       <button
-        className={`w-full bg-blue-500 text-white px-4 py-2 rounded ${
+        className={`w-full rounded bg-blue-500 px-4 py-2 text-white ${
           backHidden ? "invisible" : ""
         }`}
         onClick={handleStepBack}
@@ -74,7 +74,7 @@ export default function ControlPanel() {
         Étape précédente
       </button>
       <button
-        className={`w-full px-4 py-2 rounded text-white ${
+        className={`w-full rounded px-4 py-2 text-white ${
           autoRunHidden ? "invisible" : ""
         }`}
         style={{ backgroundColor: autoRunning ? "#DC2626" : "#6B7280" }}
@@ -98,7 +98,7 @@ export default function ControlPanel() {
         </div>
       )}
       <button
-        className={`w-full bg-yellow-500 text-white px-4 py-2 rounded ${
+        className={`w-full rounded bg-yellow-500 px-4 py-2 text-white ${
           debugHidden ? "invisible" : ""
         }`}
         onClick={handleToggleDebug}
@@ -107,7 +107,7 @@ export default function ControlPanel() {
         {debugMode ? "Quitter debug" : "Mode debug"}
       </button>
       <button
-        className={`w-full bg-purple-500 text-white px-4 py-2 rounded ${
+        className={`w-full rounded bg-purple-500 px-4 py-2 text-white ${
           theoryHidden ? "invisible" : ""
         }`}
         onClick={handleToggleTheory}
@@ -117,6 +117,7 @@ export default function ControlPanel() {
       </button>
       {debugMode && <DebugCallTree />}
       {showTheory && <TheorySlide onClose={handleToggleTheory} />}
+      <div></div>
     </div>
   );
 }
