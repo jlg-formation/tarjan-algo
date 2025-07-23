@@ -47,6 +47,8 @@ Lancer `bun run lint`
 
 Lancer `bun run build`
 
+If the code does not build, please check step by step why and correct until it correctly build.
+
 ---
 
 ## ✅ Convention de commit
