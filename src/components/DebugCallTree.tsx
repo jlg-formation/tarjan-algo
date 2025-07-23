@@ -1,4 +1,3 @@
-import React from "react";
 import { useAlgoStore } from "../store/algoState";
 
 export default function DebugCallTree() {

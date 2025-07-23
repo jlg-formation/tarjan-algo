@@ -1,9 +1,19 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import type React from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { select } from "d3-selection";
 import { drag as d3Drag } from "d3-drag";
-import { useGraphStore, type GraphNode } from "../store/graphStore";
+import {
+  useGraphStore,
+  type GraphNode,
+  type GraphEdge,
+} from "../store/graphStore";
 import { useAlgoStore } from "../store/algoState";
 import { useShallow } from "zustand/react/shallow";
+
+interface DragEventLike {
+  x: number;
+  y: number;
+}
 
 export default function GraphCanvas() {
   const nodes = useGraphStore((s) => s.nodes);
@@ -119,14 +129,14 @@ export default function GraphCanvas() {
       .join("line")
       .attr("stroke", "#666")
       .attr("marker-end", "url(#arrow)")
-      .attr("x1", (d) => nodeMap.get(d.from)?.position.x ?? 0)
-      .attr("y1", (d) => nodeMap.get(d.from)?.position.y ?? 0)
-      .attr("x2", (d) => nodeMap.get(d.to)?.position.x ?? 0)
-      .attr("y2", (d) => nodeMap.get(d.to)?.position.y ?? 0);
+      .attr("x1", (d: GraphEdge) => nodeMap.get(d.from)?.position.x ?? 0)
+      .attr("y1", (d: GraphEdge) => nodeMap.get(d.from)?.position.y ?? 0)
+      .attr("x2", (d: GraphEdge) => nodeMap.get(d.to)?.position.x ?? 0)
+      .attr("y2", (d: GraphEdge) => nodeMap.get(d.to)?.position.y ?? 0);
 
-    const dragBehaviour = d3Drag<SVGGElement, GraphNode>().on(
+    const dragBehaviour = d3Drag().on(
       "drag",
-      (event, d) => {
+      (event: DragEventLike, d: GraphNode) => {
         if (!editable) return;
         const updated = nodes.map((n) =>
           n.id === d.id ? { ...n, position: { x: event.x, y: event.y } } : n,
@@ -148,9 +158,12 @@ export default function GraphCanvas() {
       .data(nodes)
       .join("g")
       .attr("class", "node")
-      .attr("transform", (d) => `translate(${d.position.x},${d.position.y})`)
+      .attr(
+        "transform",
+        (d: GraphNode) => `translate(${d.position.x},${d.position.y})`,
+      )
       .call(dragBehaviour)
-      .on("click", (event, d) => {
+      .on("click", (event: React.MouseEvent<SVGGElement>, d: GraphNode) => {
         event.stopPropagation();
         handleNodeClick(d.id);
       });
@@ -158,13 +171,13 @@ export default function GraphCanvas() {
     nodeGroups
       .append("circle")
       .attr("r", 20)
-      .attr("class", (d) => getNodeClass(d));
+      .attr("class", (d: GraphNode) => getNodeClass(d));
 
     nodeGroups
       .append("text")
       .attr("text-anchor", "middle")
       .attr("dy", ".35em")
-      .text((d) => d.label);
+      .text((d: GraphNode) => d.label);
   }, [nodes, edges, editable, getNodeClass, handleNodeClick, setGraphNodes]);
 
   return (
