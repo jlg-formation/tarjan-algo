@@ -132,5 +132,7 @@ interface TarjanStateUpdate {
 - Graphe limité en taille (~30 nœuds)
 - Animations non bloquantes
 - Aucune dépendance critique instable
+- Les librairies externes ne doivent jamais être chargées via CDN, elles sont
+  installées localement
 
 ---
