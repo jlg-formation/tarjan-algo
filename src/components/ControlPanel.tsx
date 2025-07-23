@@ -20,9 +20,16 @@ export default function ControlPanel() {
   const [debugMode, setDebugMode] = useState(false);
   const [showTheory, setShowTheory] = useState(false);
 
+  const resetAlgo = useAlgoStore((s) => s.resetAlgo);
+
   const handleStart = () => {
     startAlgo();
     setEditable(false);
+  };
+
+  const handleStop = () => {
+    resetAlgo();
+    setEditable(true);
   };
 
   const handleStepForward = () => stepForward();
@@ -37,7 +44,9 @@ export default function ControlPanel() {
   const handleToggleDebug = () => setDebugMode((v) => !v);
   const handleToggleTheory = () => setShowTheory((v) => !v);
 
-  const startHidden = status !== "idle";
+  const startLabel =
+    status === "idle" ? "Démarrer l’algorithme" : "Interrompre l’algorithme";
+  const handleStartClick = status === "idle" ? handleStart : handleStop;
   const forwardHidden = status !== "running";
   const backHidden = status === "idle" || currentStep === 0;
   const autoRunHidden = status !== "running";
@@ -47,13 +56,10 @@ export default function ControlPanel() {
   return (
     <div className="space-y-4">
       <button
-        className={`w-full rounded bg-green-600 px-4 py-2 text-white ${
-          startHidden ? "invisible" : ""
-        }`}
-        onClick={handleStart}
-        disabled={startHidden}
+        className="w-full rounded bg-green-600 px-4 py-2 text-white"
+        onClick={handleStartClick}
       >
-        Démarrer l’algorithme
+        {startLabel}
       </button>
       <button
         className={`w-full rounded bg-blue-500 px-4 py-2 text-white ${
