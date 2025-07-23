@@ -128,8 +128,11 @@ export default function GraphCanvas() {
       "drag",
       (event, d) => {
         if (!editable) return;
+        const bounds = svgEl.getBoundingClientRect();
+        const x = event.sourceEvent.clientX - bounds.left;
+        const y = event.sourceEvent.clientY - bounds.top;
         const updated = nodes.map((n) =>
-          n.id === d.id ? { ...n, position: { x: event.x, y: event.y } } : n,
+          n.id === d.id ? { ...n, position: { x, y } } : n,
         );
         setGraphNodes(
           updated.map((node) => {
