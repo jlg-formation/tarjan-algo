@@ -219,9 +219,12 @@ export default function GraphCanvas() {
       )
       .call(dragBehaviour)
       .on("mouseenter", () => {
-        if (cursor === "") {
-          setCursor("cursor-pointer");
-        }
+        setCursor((cursor) => {
+          if (cursor === "") {
+            return "cursor-pointer";
+          }
+          return cursor;
+        });
       })
       .on("mouseleave", () => {
         setCursor("");
@@ -248,7 +251,7 @@ export default function GraphCanvas() {
     getNodeClass,
     handleNodeClick,
     setGraphNodes,
-    cursor,
+    setCursor,
   ]);
 
   return (
