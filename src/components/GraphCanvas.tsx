@@ -178,8 +178,10 @@ export default function GraphCanvas() {
       );
 
     const dragBehaviour = d3Drag()
-      .on("start", () => {
-        select(svgEl).classed("cursor-grab", true);
+      .on("start", function (this: SVGGElement) {
+        select(this)
+          .classed("cursor-pointer", false)
+          .classed("cursor-grab", true);
       })
       .on("drag", (event: DragEventLike, d: GraphNode) => {
         if (!editable) return;
@@ -197,8 +199,10 @@ export default function GraphCanvas() {
           }),
         );
       })
-      .on("end", () => {
-        select(svgEl).classed("cursor-grab", false);
+      .on("end", function (this: SVGGElement) {
+        select(this)
+          .classed("cursor-grab", false)
+          .classed("cursor-pointer", true);
       });
 
     const nodeGroups = svg
