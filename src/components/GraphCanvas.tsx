@@ -1,5 +1,5 @@
 import type React from "react";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { select } from "d3-selection";
 import { drag as d3Drag } from "d3-drag";
 import {
@@ -28,6 +28,10 @@ export default function GraphCanvas() {
   const selectedNodeForEdge = useGraphStore((s) => s.selectedNodeForEdge);
   const setSelectedNodeForEdge = useGraphStore((s) => s.setSelectedNodeForEdge);
   const editable = useGraphStore((s) => s.editable);
+
+  const [cursor, setCursor] = useState<
+    "" | "cursor-pointer" | "cursor-grabbing"
+  >("");
 
   const { indexMap, onStackMap, sccs } = useAlgoStore(
     useShallow((s) => ({
@@ -177,9 +181,12 @@ export default function GraphCanvas() {
           getLineCoords(nodeMap.get(d.from), nodeMap.get(d.to)).y2,
       );
 
-    const dragBehaviour = d3Drag().on(
-      "drag",
-      (event: DragEventLike, d: GraphNode) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const dragBehaviour: any = d3Drag()
+      .on("start", () => {
+        setCursor("cursor-grabbing");
+      })
+      .on("drag", (event: DragEventLike, d: GraphNode) => {
         if (!editable) return;
         const bounds = svgEl.getBoundingClientRect();
         const x = event.sourceEvent.clientX - bounds.left;
@@ -194,8 +201,10 @@ export default function GraphCanvas() {
             return rest;
           }),
         );
-      },
-    );
+      })
+      .on("end", () => {
+        setCursor("cursor-pointer");
+      });
 
     const nodeGroups = svg
       .append("g")
@@ -209,6 +218,8 @@ export default function GraphCanvas() {
         (d: GraphNode) => `translate(${d.position.x},${d.position.y})`,
       )
       .call(dragBehaviour)
+      .on("mouseenter", () => setCursor("cursor-pointer"))
+      .on("mouseleave", () => setCursor(""))
       .on("click", (event: React.MouseEvent<SVGGElement>, d: GraphNode) => {
         event.stopPropagation();
         handleNodeClick(d.id);
@@ -229,8 +240,9 @@ export default function GraphCanvas() {
   return (
     <svg
       ref={svgRef}
-      className="h-full w-full rounded bg-white shadow"
+      className={`h-full w-full rounded bg-white shadow ${cursor}`}
       onClick={handleCanvasClick}
+      onMouseLeave={() => setCursor("")}
     />
   );
 }
