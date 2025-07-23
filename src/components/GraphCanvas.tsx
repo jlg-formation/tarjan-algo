@@ -46,11 +46,16 @@ export default function GraphCanvas() {
   const selectedNodes = useGraphStore((s) => s.selectedNodes);
   const toggleNodeSelection = useGraphStore((s) => s.toggleNodeSelection);
   const getNodeClass = useCallback(
-    (n: GraphNode) =>
-      selectedNodes.includes(n.id)
+    (n: GraphNode) => {
+      // highlight the temporary source node in yellow when building an edge
+      if (selectedNodeForEdge === n.id) {
+        return `${baseClass} fill-yellow-300`;
+      }
+      return selectedNodes.includes(n.id)
         ? `${baseClass} fill-gray-300`
-        : `${baseClass} fill-white`,
-    [selectedNodes],
+        : `${baseClass} fill-white`;
+    },
+    [selectedNodes, selectedNodeForEdge],
   );
 
   const svgRef = useRef<SVGSVGElement | null>(null);
