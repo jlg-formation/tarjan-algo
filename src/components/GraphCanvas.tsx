@@ -177,9 +177,11 @@ export default function GraphCanvas() {
           getLineCoords(nodeMap.get(d.from), nodeMap.get(d.to)).y2,
       );
 
-    const dragBehaviour = d3Drag().on(
-      "drag",
-      (event: DragEventLike, d: GraphNode) => {
+    const dragBehaviour = d3Drag()
+      .on("start", () => {
+        select(svgEl).classed("cursor-grab", true);
+      })
+      .on("drag", (event: DragEventLike, d: GraphNode) => {
         if (!editable) return;
         const bounds = svgEl.getBoundingClientRect();
         const x = event.sourceEvent.clientX - bounds.left;
@@ -194,8 +196,10 @@ export default function GraphCanvas() {
             return rest;
           }),
         );
-      },
-    );
+      })
+      .on("end", () => {
+        select(svgEl).classed("cursor-grab", false);
+      });
 
     const nodeGroups = svg
       .append("g")
@@ -203,7 +207,7 @@ export default function GraphCanvas() {
       .selectAll("g.node")
       .data(nodes)
       .join("g")
-      .attr("class", "node")
+      .attr("class", "node cursor-pointer")
       .attr(
         "transform",
         (d: GraphNode) => `translate(${d.position.x},${d.position.y})`,
