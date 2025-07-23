@@ -68,6 +68,12 @@ test:     ajout ou correction de tests
 chore:    maintenance ou dépendances
 ```
 
+Ajouter dans le pied de page (footer) du message de commit:
+
+```
+Co-authored-by: OpenAI Codex for JLG <codex@openai.com>
+```
+
 ---
 
 ## ⚙️ Suggestions supplémentaires
