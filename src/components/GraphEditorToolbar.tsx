@@ -1,3 +1,4 @@
+import { FaLink, FaTrash, FaTrashAlt } from "react-icons/fa";
 import { useAlgoStore } from "../store/algoState";
 import { useGraphStore } from "../store/graphStore";
 
@@ -35,33 +36,38 @@ export default function GraphEditorToolbar() {
   })();
 
   return (
-    <div className="space-y-4">
+    <div className="flex items-center gap-2">
       <button
-        className="w-full bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
+        className="cursor-pointer rounded bg-gray-500 p-2 text-white disabled:opacity-50"
         onClick={() => {
           if (confirmAlgoReset()) setEditMode("addEdgeStep1");
         }}
         disabled={!editable}
+        aria-label="Ajouter une arête"
       >
-        Ajouter une arête
+        <FaLink className="h-5 w-5" />
       </button>
       {selectedNodes.length > 0 && (
         <button
-          className="w-full bg-red-600 text-white px-4 py-2 rounded disabled:opacity-50"
+          className="cursor-pointer rounded bg-gray-500 p-2 text-white disabled:opacity-50"
           onClick={removeSelectedNodes}
           disabled={!editable}
+          aria-label="Effacer le nœud"
         >
-          Effacer le nœud
+          <FaTrash className="h-5 w-5" />
         </button>
       )}
       <button
-        className="w-full bg-red-600 text-white px-4 py-2 rounded disabled:opacity-50"
+        className="cursor-pointer rounded bg-gray-500 p-2 text-white disabled:opacity-50"
         onClick={handleResetGraph}
         disabled={!editable}
+        aria-label="Effacer graphe"
       >
-        Effacer graphe
+        <FaTrashAlt className="h-5 w-5" />
       </button>
-      {instruction && <p className="text-sm text-gray-600">{instruction}</p>}
+      {instruction && (
+        <p className="ml-2 text-sm text-gray-600">{instruction}</p>
+      )}
     </div>
   );
 }
