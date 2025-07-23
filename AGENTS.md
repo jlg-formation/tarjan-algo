@@ -43,6 +43,10 @@ Lancer `bun run format`
 
 Lancer `bun run lint`
 
+### ✅ Builder
+
+Lancer `bun run build`
+
 ---
 
 ## ✅ Convention de commit
