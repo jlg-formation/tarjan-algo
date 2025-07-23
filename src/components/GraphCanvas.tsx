@@ -13,6 +13,7 @@ import { useShallow } from "zustand/react/shallow";
 interface DragEventLike {
   x: number;
   y: number;
+  sourceEvent: MouseEvent;
 }
 
 export default function GraphCanvas() {
@@ -186,7 +187,7 @@ export default function GraphCanvas() {
   return (
     <svg
       ref={svgRef}
-      className="w-full h-full bg-white rounded shadow"
+      className="h-full w-full rounded bg-white shadow"
       onClick={handleCanvasClick}
     />
   );
