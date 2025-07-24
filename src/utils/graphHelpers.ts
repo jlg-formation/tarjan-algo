@@ -1,16 +1,16 @@
-export interface LabeledNode {
-  label: string;
+export interface IdNode {
+  id: string;
 }
 
 /**
- * Return a label "N<number>" filling gaps in existing nodes labels.
+ * Return an id "N<number>" filling gaps in existing node ids.
  * If numbers 1..n contain holes, the smallest missing number is used.
  * Otherwise returns N<nodes.length + 1>.
  */
-export function getNextNodeLabel(nodes: LabeledNode[]): string {
+export function getNextNodeId(nodes: IdNode[]): string {
   const used = new Set<number>();
   for (const n of nodes) {
-    const match = /^N(\d+)$/.exec(n.label);
+    const match = /^N(\d+)$/.exec(n.id);
     if (match) {
       used.add(Number(match[1]));
     }

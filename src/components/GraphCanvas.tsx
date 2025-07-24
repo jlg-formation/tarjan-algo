@@ -7,7 +7,6 @@ import {
   type GraphNode,
   type GraphEdge,
 } from "../store/graphStore";
-import { getNextNodeLabel } from "../utils/graphHelpers";
 import { useAlgoStore } from "../store/algoState";
 import { useShallow } from "zustand/react/shallow";
 
@@ -125,11 +124,10 @@ export default function GraphCanvas() {
       const y = event.clientY - bounds.top;
       addGraphNode({
         id: getNextNodeId(),
-        label: getNextNodeLabel(nodes),
         position: { x, y },
       });
     },
-    [editable, editMode, getNextNodeId, addGraphNode, nodes],
+    [editable, editMode, getNextNodeId, addGraphNode],
   );
 
   useEffect(() => {
@@ -266,7 +264,7 @@ export default function GraphCanvas() {
       .append("text")
       .attr("text-anchor", "middle")
       .attr("dy", ".35em")
-      .text((d: GraphNode) => d.label);
+      .text((d: GraphNode) => d.id);
   }, [
     nodes,
     edges,
