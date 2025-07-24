@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { useAlgoStore } from "./algoState";
+import { getNextNodeId as computeNextNodeId } from "../utils/graphHelpers";
 
 export type NodeId = string;
 
@@ -89,9 +90,12 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
   setEditMode: (mode) => set({ editMode: mode }),
 
   getNextNodeId: () => {
-    const count = get().nodeCount + 1;
-    set({ nodeCount: count });
-    return `N${count}`;
+    const id = computeNextNodeId(get().nodes);
+    const num = Number(id.slice(1));
+    if (num > get().nodeCount) {
+      set({ nodeCount: num });
+    }
+    return id;
   },
 
   setSelectedNodeForEdge: (id) => set({ selectedNodeForEdge: id }),
