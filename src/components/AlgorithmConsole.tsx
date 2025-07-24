@@ -12,13 +12,10 @@ export default function AlgorithmConsole() {
   );
   const nodes = useGraphStore((s) => s.nodes);
 
-  const idToLabel = new Map(nodes.map((n) => [n.id, n.label]));
-
   const rows = [...nodes]
-    .sort((a, b) => a.label.localeCompare(b.label))
+    .sort((a, b) => a.id.localeCompare(b.id))
     .map((n) => ({
       id: n.id,
-      label: n.label,
       index: indexMap.get(n.id) ?? "—",
       lowlink: lowLinkMap.get(n.id) ?? "—",
     }));
@@ -38,7 +35,7 @@ export default function AlgorithmConsole() {
           <tbody>
             {rows.map((r) => (
               <tr key={r.id} className="odd:bg-white even:bg-gray-50">
-                <td className="border border-gray-300 px-2 py-1">{r.label}</td>
+                <td className="border border-gray-300 px-2 py-1">{r.id}</td>
                 <td className="border border-gray-300 px-2 py-1">{r.index}</td>
                 <td className="border border-gray-300 px-2 py-1">
                   {r.lowlink}
@@ -53,7 +50,7 @@ export default function AlgorithmConsole() {
         <ul className="divide-y divide-gray-300 border border-gray-300 bg-gray-50">
           {stack.map((id) => (
             <li key={id} className="px-2 py-1">
-              {idToLabel.get(id) ?? id}
+              {id}
             </li>
           ))}
         </ul>

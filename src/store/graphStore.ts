@@ -11,7 +11,6 @@ export interface NodeStatus {
 
 export interface GraphNode {
   id: NodeId;
-  label: string;
   position: { x: number; y: number };
   status: NodeStatus;
 }
@@ -92,7 +91,7 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
   getNextNodeId: () => {
     const count = get().nodeCount + 1;
     set({ nodeCount: count });
-    return `node-${count}`;
+    return `N${count}`;
   },
 
   setSelectedNodeForEdge: (id) => set({ selectedNodeForEdge: id }),
