@@ -47,49 +47,43 @@ export default function ControlPanel() {
   const startLabel =
     status === "idle" ? "Démarrer l’algorithme" : "Interrompre l’algorithme";
   const handleStartClick = status === "idle" ? handleStart : handleStop;
-  const forwardHidden = status !== "running";
-  const backHidden = status === "idle" || currentStep === 0;
-  const autoRunHidden = status !== "running";
-  const debugHidden = status === "idle";
-  const theoryHidden = false;
+  const forwardDisabled = status !== "running";
+  const backDisabled = status === "idle" || currentStep === 0;
+  const autoRunDisabled = status !== "running";
+  const debugDisabled = status === "idle";
+  const theoryDisabled = false;
 
   return (
     <div className="space-y-4">
       <button
-        className="w-full cursor-pointer rounded bg-green-600 px-4 py-2 text-white"
+        className="w-full cursor-pointer rounded bg-green-600 px-4 py-2 text-white disabled:opacity-50"
         onClick={handleStartClick}
       >
         {startLabel}
       </button>
       <button
-        className={`w-full cursor-pointer rounded bg-blue-500 px-4 py-2 text-white ${
-          forwardHidden ? "invisible" : ""
-        }`}
+        className="w-full cursor-pointer rounded bg-blue-500 px-4 py-2 text-white disabled:opacity-50"
         onClick={handleStepForward}
-        disabled={forwardHidden}
+        disabled={forwardDisabled}
       >
         Étape suivante
       </button>
       <button
-        className={`w-full cursor-pointer rounded bg-blue-500 px-4 py-2 text-white ${
-          backHidden ? "invisible" : ""
-        }`}
+        className="w-full cursor-pointer rounded bg-blue-500 px-4 py-2 text-white disabled:opacity-50"
         onClick={handleStepBack}
-        disabled={backHidden}
+        disabled={backDisabled}
       >
         Étape précédente
       </button>
       <button
-        className={`w-full cursor-pointer rounded px-4 py-2 text-white ${
-          autoRunHidden ? "invisible" : ""
-        }`}
+        className="w-full cursor-pointer rounded px-4 py-2 text-white disabled:opacity-50"
         style={{ backgroundColor: autoRunning ? "#DC2626" : "#6B7280" }}
         onClick={handleToggleAutoRun}
-        disabled={autoRunHidden}
+        disabled={autoRunDisabled}
       >
         {autoRunning ? "Stop lecture automatique" : "Lecture automatique"}
       </button>
-      {!autoRunHidden && (
+      {!autoRunDisabled && (
         <div className="flex items-center space-x-2">
           <input
             type="range"
@@ -104,20 +98,16 @@ export default function ControlPanel() {
         </div>
       )}
       <button
-        className={`w-full cursor-pointer rounded bg-yellow-500 px-4 py-2 text-white ${
-          debugHidden ? "invisible" : ""
-        }`}
+        className="w-full cursor-pointer rounded bg-yellow-500 px-4 py-2 text-white disabled:opacity-50"
         onClick={handleToggleDebug}
-        disabled={debugHidden}
+        disabled={debugDisabled}
       >
         {debugMode ? "Quitter debug" : "Mode debug"}
       </button>
       <button
-        className={`w-full cursor-pointer rounded bg-purple-500 px-4 py-2 text-white ${
-          theoryHidden ? "invisible" : ""
-        }`}
+        className="w-full cursor-pointer rounded bg-purple-500 px-4 py-2 text-white disabled:opacity-50"
         onClick={handleToggleTheory}
-        disabled={theoryHidden}
+        disabled={theoryDisabled}
       >
         {showTheory ? "Masquer théorie" : "Voir théorie"}
       </button>
