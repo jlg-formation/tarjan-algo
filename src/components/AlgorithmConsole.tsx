@@ -12,8 +12,11 @@ export default function AlgorithmConsole() {
   );
   const nodes = useGraphStore((s) => s.nodes);
 
+  const idToLabel = new Map(nodes.map((n) => [n.id, n.label]));
+
   const rows = nodes.map((n) => ({
     id: n.id,
+    label: n.label,
     index: indexMap.get(n.id) ?? "—",
     lowlink: lowLinkMap.get(n.id) ?? "—",
   }));
@@ -22,20 +25,20 @@ export default function AlgorithmConsole() {
     <div className="space-y-4">
       <div>
         <h3 className="font-semibold">Index / Lowlink</h3>
-        <table className="w-full text-left border border-gray-300">
+        <table className="w-full border border-gray-300 text-left">
           <thead className="bg-gray-200">
             <tr>
-              <th className="px-2 py-1 border border-gray-300">Nœud</th>
-              <th className="px-2 py-1 border border-gray-300">Index</th>
-              <th className="px-2 py-1 border border-gray-300">Lowlink</th>
+              <th className="border border-gray-300 px-2 py-1">Nœud</th>
+              <th className="border border-gray-300 px-2 py-1">Index</th>
+              <th className="border border-gray-300 px-2 py-1">Lowlink</th>
             </tr>
           </thead>
           <tbody>
             {rows.map((r) => (
               <tr key={r.id} className="odd:bg-white even:bg-gray-50">
-                <td className="px-2 py-1 border border-gray-300">{r.id}</td>
-                <td className="px-2 py-1 border border-gray-300">{r.index}</td>
-                <td className="px-2 py-1 border border-gray-300">
+                <td className="border border-gray-300 px-2 py-1">{r.label}</td>
+                <td className="border border-gray-300 px-2 py-1">{r.index}</td>
+                <td className="border border-gray-300 px-2 py-1">
                   {r.lowlink}
                 </td>
               </tr>
@@ -45,10 +48,10 @@ export default function AlgorithmConsole() {
       </div>
       <div>
         <h3 className="font-semibold">Pile</h3>
-        <ul className="border border-gray-300 bg-gray-50 divide-y divide-gray-300">
+        <ul className="divide-y divide-gray-300 border border-gray-300 bg-gray-50">
           {stack.map((id) => (
             <li key={id} className="px-2 py-1">
-              {id}
+              {idToLabel.get(id) ?? id}
             </li>
           ))}
         </ul>
