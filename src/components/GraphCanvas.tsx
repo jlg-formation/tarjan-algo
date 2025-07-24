@@ -277,10 +277,13 @@ export default function GraphCanvas() {
     setCursor,
   ]);
 
+  const crosshair =
+    editable && editMode === "none" && cursor === "" ? "cursor-crosshair" : "";
+
   return (
     <svg
       ref={svgRef}
-      className={`h-full w-full rounded bg-white shadow ${cursor}`}
+      className={`h-full w-full rounded bg-white shadow ${crosshair} ${cursor}`}
       onClick={handleCanvasClick}
       onMouseLeave={() => setCursor("")}
     />
