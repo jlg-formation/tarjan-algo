@@ -1,5 +1,5 @@
 export type Graph = {
-  nodes: { id: string }[];
+  nodes: { id: string; label?: string }[];
   edges: { from: string; to: string }[];
 };
 
@@ -30,13 +30,28 @@ export function* tarjanStepByStep(graph: Graph): Generator<TarjanStateUpdate> {
   const sccs: string[][] = [];
   let index = 0;
 
+  const sortedNodes = [...graph.nodes].sort((a, b) => {
+    const la = a.label ?? a.id;
+    const lb = b.label ?? b.id;
+    return la.localeCompare(lb);
+  });
+
+  const idToLabel = new Map(sortedNodes.map((n) => [n.id, n.label ?? n.id]));
+
   const adjacency = new Map<string, string[]>();
-  for (const node of graph.nodes) {
+  for (const node of sortedNodes) {
     adjacency.set(node.id, []);
   }
   for (const edge of graph.edges) {
     const list = adjacency.get(edge.from);
     if (list) list.push(edge.to);
+  }
+  for (const list of adjacency.values()) {
+    list.sort((a, b) => {
+      const la = idToLabel.get(a) ?? a;
+      const lb = idToLabel.get(b) ?? b;
+      return la.localeCompare(lb);
+    });
   }
 
   function snapshot(
@@ -98,7 +113,7 @@ export function* tarjanStepByStep(graph: Graph): Generator<TarjanStateUpdate> {
     yield snapshot("return", v);
   }
 
-  for (const node of graph.nodes) {
+  for (const node of sortedNodes) {
     if (!indexMap.has(node.id)) {
       yield* strongConnect(node.id);
     }

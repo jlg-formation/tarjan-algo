@@ -14,12 +14,14 @@ export default function AlgorithmConsole() {
 
   const idToLabel = new Map(nodes.map((n) => [n.id, n.label]));
 
-  const rows = nodes.map((n) => ({
-    id: n.id,
-    label: n.label,
-    index: indexMap.get(n.id) ?? "—",
-    lowlink: lowLinkMap.get(n.id) ?? "—",
-  }));
+  const rows = [...nodes]
+    .sort((a, b) => a.label.localeCompare(b.label))
+    .map((n) => ({
+      id: n.id,
+      label: n.label,
+      index: indexMap.get(n.id) ?? "—",
+      lowlink: lowLinkMap.get(n.id) ?? "—",
+    }));
 
   return (
     <div className="space-y-4">
