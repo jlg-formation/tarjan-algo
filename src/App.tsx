@@ -5,6 +5,7 @@ import ControlPanel from "./components/ControlPanel";
 import AlgorithmConsole from "./components/AlgorithmConsole";
 import ExplanationBox from "./components/ExplanationBox";
 import { useAlgoStore } from "./store/algoState";
+import { FaGithub } from "react-icons/fa";
 
 export default function App() {
   console.log("render app");
@@ -40,6 +41,15 @@ export default function App() {
       {/* Footer */}
       <footer className="bg-white py-2 text-center text-sm text-gray-500 shadow-inner">
         JLG Formation ©2025
+        <a
+          href="https://github.com/jlg-formation/tarjan-algo"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="ml-2 inline-block align-middle text-xl"
+          aria-label="GitHub"
+        >
+          <FaGithub />
+        </a>
       </footer>
     </div>
   );
